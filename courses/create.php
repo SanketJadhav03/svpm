@@ -1,5 +1,4 @@
 <?php
-session_start();
 include "../config/connection.php";
 include "../component/header.php";
 include "../component/sidebar.php";
@@ -8,7 +7,8 @@ if(isset($_POST["course_save"])){
     $course_name = $_POST["course_name"];
     $course_type = $_POST["course_type"];
     $course_total = $_POST["course_total"]; 
-    $insertQuery = "INSERT INTO `tbl_courses`(`course_code`,`course_name`,`course_type`,`course_total`) VALUES('$course_code','$course_name','$course_type','$course_total')";
+    $course_fees = $_POST["course_fees"]; 
+    $insertQuery = "INSERT INTO `tbl_courses`(`course_code`,`course_name`,`course_type`,`course_total`,`course_fees`) VALUES('$course_code','$course_name','$course_type','$course_total','$course_fees')";
     if(mysqli_query($conn,$insertQuery)){
         $_SESSION["success"] = "Course Created Successfully!";
         echo "<script>window.location = 'index.php';</script>";
@@ -27,13 +27,17 @@ if(isset($_POST["course_save"])){
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-6">
+                    <div class="col-4">
                         <label for="">Course Code <span class="text-danger font-weight-bold"> *</span></label>
                         <input type="text" class="form-control font-weight-bold" name="course_code" id="course_code" placeholder="Course Code">
                     </div>
-                    <div class="col-6">
+                    <div class="col-4">
                         <label for="">Course Name <span class="text-danger font-weight-bold"> *</span></label>
                         <input type="text" class="form-control font-weight-bold" name="course_name" id="course_name" placeholder="Course Name">
+                    </div>
+                    <div class="col-4">
+                        <label for="">Course Fees ( Per Year ) <span class="text-danger font-weight-bold"> *</span></label>
+                        <input type="text" class="form-control font-weight-bold" name="course_fees" id="course_fees" placeholder="Course Fees">
                     </div>
                     <div class="col-6 mt-3">
                         <label for="">Semester Or Year <span class="text-danger font-weight-bold"> *</span></label>

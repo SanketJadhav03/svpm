@@ -1,5 +1,6 @@
 <?php
 $title = "Testing Dhamal";
+include "config/connection.php";
 include("component/header.php");
 include "component/sidebar.php";
 ?>
@@ -9,15 +10,15 @@ include "component/sidebar.php";
     <div class="content-header">
       <div class="container-fluid">
         <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1 class="m-0">Admin </h1>
+          <div class="col-12 text-center">
+            <h1 class="h1">Admin Dashboard </h1>
           </div><!-- /.col -->
-          <div class="col-sm-6">
+          <!-- <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="#">Home</a></li>
               <li class="breadcrumb-item active">Dashboard v2</li>
             </ol>
-          </div><!-- /.col -->
+          </div>/.col -->
         </div><!-- /.row -->
       </div><!-- /.container-fluid -->
     </div>
@@ -79,8 +80,12 @@ include "component/sidebar.php";
               <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-users"></i></span>
 
               <div class="info-box-content">
-                <span class="info-box-text">New Members</span>
-                <span class="info-box-number">2,000</span>
+                <?php 
+                $queryRoll = "SELECT COUNT(*) AS student_count FROM tbl_students;";
+                $dataRoll = mysqli_fetch_array(mysqli_query($conn,$queryRoll));
+                ?>
+                <span class="info-box-text">Total Students</span>
+                <span class="info-box-number"><?= $dataRoll["student_count"]?></span>
               </div>
               <!-- /.info-box-content -->
             </div>

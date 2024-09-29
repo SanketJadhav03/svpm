@@ -7,14 +7,14 @@ include "../component/sidebar.php";
     <div class="card ">
         <div class="card-header">
             <div class="text-center p-3">
-                <h3 class="font-weight-bold">Course Management</h3>
+                <h3 class="font-weight-bold">Subject Management</h3>
             </div>
             <form action="">
                 <div class="row justify-content-end">
 
                     <div class="col-2 font-weight-bold">
-                        Course Name
-                        <input type="text" name="course_name" value="<?= isset($_GET["course_name"]) ? $_GET["course_name"] : "" ?>" class="form-control font-weight-bold" placeholder="Course Name">
+                        Subject Name
+                        <input type="text" name="subject_name" value="<?= isset($_GET["subject_name"]) ? $_GET["subject_name"] : "" ?>" class="form-control font-weight-bold" placeholder="Subject Name">
                     </div>
                     <div class="col-1 font-weight-bold">
                         <br>
@@ -34,7 +34,7 @@ include "../component/sidebar.php";
                     </div>
                     <div class="col-2 text-right font-weight-bold">
                         <br>
-                        <a href="create.php" class="font-weight-bold  w-100 shadow btn  btn-success"> <i class="fas fa-plus"></i>&nbsp; Add Course</a>
+                        <a href="create.php" class="font-weight-bold  w-100 shadow btn  btn-success"> <i class="fas fa-plus"></i>&nbsp; Add Subject</a>
                     </div>
                 </div>
             </form>
@@ -57,10 +57,13 @@ include "../component/sidebar.php";
                 <table class="table ">
                     <tr>
                         <th>#</th>
-                        <th>Course Code</th>
                         <th>Course Name</th>
-                        <th>Semester / Year</th>
-                        <th>Course Fees</th>
+                        <th>Subject Code</th>
+                        <th>Subject Name</th>
+                        <th>Subject For</th>
+                        <th>Subject Type</th>
+                        <th>Theory Marks</th>
+                        <th>Practcal Marks</th>
                         <th>Action</th>
                     </tr>
                     <?php
@@ -68,13 +71,13 @@ include "../component/sidebar.php";
                     $limit = 10;
                     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
                     $offset = ($page - 1) * $limit;
-                    $countQuery = "SELECT COUNT(*) as total FROM `tbl_courses`";
-                    $selectQuery = "SELECT * FROM `tbl_courses` LIMIT $limit OFFSET $offset";
-                    if (isset($_GET["course_name"])) {
-                        $course_name = $_GET["course_name"];
-                        $course_name = mysqli_real_escape_string($conn, $course_name);
-                        $countQuery = "SELECT COUNT(*) as total FROM `tbl_courses` WHERE `course_name` LIKE '%$course_name%'";
-                        $selectQuery = "SELECT * FROM `tbl_courses` WHERE `course_name` LIKE '%$course_name%' LIMIT $limit OFFSET $offset";
+                    $countQuery = "SELECT COUNT(*) as total FROM `tbl_subjects`";
+                    $selectQuery = "SELECT * FROM `tbl_subjects` INNER JOIN `tbl_courses` ON tbl_courses.course_id = tbl_subjects.subject_course LIMIT $limit OFFSET $offset";
+                    if (isset($_GET["subject_name"])) {
+                        $subject_name = $_GET["subject_name"];
+                        $subject_name = mysqli_real_escape_string($conn, $subject_name);
+                        $countQuery = "SELECT COUNT(*) as total FROM `tbl_subjects` WHERE `subject_name` LIKE '%$subject_name%'";
+                        $selectQuery = "SELECT * FROM `tbl_subjects` INNER JOIN `tbl_courses` ON tbl_courses.course_id = tbl_subjects.subject_course WHERE `subject_name` LIKE '%$subject_name%' LIMIT $limit OFFSET $offset";
                     }
                     $countResult = mysqli_query($conn, $countQuery);
                     $totalRecords = mysqli_fetch_assoc($countResult)['total'];
@@ -84,15 +87,18 @@ include "../component/sidebar.php";
                     ?>
                         <tr>
                             <td><?= $count += 1 ?></td>
-                            <td><?= $data["course_code"] ?></td>
                             <td><?= $data["course_name"] ?></td>
-                            <td><?= $data["course_total"] . " " . ($data["course_type"] == 1 ? "Semester" : "Year") ?></td>
-                            <td><?= $data["course_fees"] ?></td>
+                            <td><?= $data["subject_code"] ?></td>
+                            <td><?= $data["subject_name"]  ?></td>
+                            <td><?= $data["subject_for"]  ?></td>
+                            <td><?= $data["subject_type"] == 1 ? " Core":" Optional"  ?></td>
+                            <td><?= $data["subject_theory"]  ?></td>
+                            <td><?= $data["subject_practical"]  ?></td>
                             <td>
-                                <a href="edit.php?course_id=<?= $data["course_id"] ?>" class="btn btn-sm shadow btn-info">
+                                <a href="edit.php?subject_id=<?= $data["subject_id"] ?>" class="btn btn-sm shadow btn-info">
                                     <i class="fa fa-pen"></i>
                                 </a>
-                                <a href="delete.php?course_id=<?= $data["course_id"] ?>" onclick="if(confirm('Are you sure want to delete this course?')){return true}else{return false;}" class="btn btn-sm shadow btn-danger">
+                                <a href="delete.php?subject_id=<?= $data["subject_id"] ?>" onclick="if(confirm('Are you sure want to delete this subject?')){return true}else{return false;}" class="btn btn-sm shadow btn-danger">
                                     <i class="fa fa-trash"></i>
                                 </a>
                             </td>
@@ -104,8 +110,8 @@ include "../component/sidebar.php";
                     if ($count == 0) {
                     ?>
                         <tr>
-                            <td colspan="5" class="font-weight-bold text-center">
-                                <span class="text-danger">Courses Not Found.</span>
+                            <td colspan="9" class="font-weight-bold text-center">
+                                <span class="text-danger">Subjects Not Found.</span>
                             </td>
                         </tr>
                     <?php
@@ -118,15 +124,15 @@ include "../component/sidebar.php";
             <div class="d-flex justify-content-center">
                 <div class="pagination">
                     <?php if ($page > 1): ?>
-                        <a class="btn btn-sm btn-outline-info ml-2" href="?page=<?php echo $page - 1; ?>&course_name=<?php echo isset($course_name) ? $course_name : ''; ?>">Previous</a>
+                        <a class="btn btn-sm btn-outline-info ml-2" href="?page=<?php echo $page - 1; ?>&subject_name=<?php echo isset($subject_name) ? $subject_name : ''; ?>">Previous</a>
                     <?php endif; ?>
 
                     <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                        <a class="btn btn-sm <?= $page == $i?"btn-info":"btn-outline-info" ?>  ml-2 shadow" href="?page=<?php echo $i; ?>&course_name=<?php echo isset($course_name) ? $course_name : ''; ?>" class="<?php if ($i == $page) echo 'active'; ?>"><?php echo $i; ?></a>
+                        <a class="btn btn-sm <?= $page == $i?"btn-info":"btn-outline-info" ?>  ml-2 shadow" href="?page=<?php echo $i; ?>&subject_name=<?php echo isset($subject_name) ? $subject_name : ''; ?>" class="<?php if ($i == $page) echo 'active'; ?>"><?php echo $i; ?></a>
                     <?php endfor; ?>
 
                     <?php if ($page < $totalPages): ?>
-                        <a class="btn btn-sm btn-outline-info ml-2" href="?page=<?php echo $page + 1; ?>&course_name=<?php echo isset($course_name) ? $course_name : ''; ?>">Next</a>
+                        <a class="btn btn-sm btn-outline-info ml-2" href="?page=<?php echo $page + 1; ?>&subject_name=<?php echo isset($subject_name) ? $subject_name : ''; ?>">Next</a>
                     <?php endif; ?>
                 </div>
             </div>
@@ -135,47 +141,57 @@ include "../component/sidebar.php";
 
 </div>
 <script>
-    document.getElementById('download-pdf').addEventListener('click', () => {
+    document.getElementById('download-pdf').addEventListener('click', function() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
-    // Utility to add text to the PDF
-    const addText = (text, x, y, maxLength = null) => {
-        const truncatedText = maxLength && text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
-        doc.text(truncatedText, x, y);
-    };
-
-    // PDF Title
+    // Title
     doc.setFontSize(16);
-    addText('Course Report', 14, 16);
+    doc.text('Subject Management Report', 14, 16);
 
     // Table headers
-    const headers = ['#', 'Course Code', 'Course Name', 'Course Fees', 'Semester / Year'];
-    const positions = [10, 30, 70, 120, 160];
-    
     doc.setFontSize(12);
-    headers.forEach((header, index) => addText(header, positions[index], 30));
+    const startX = 14;
+    const startY = 30;
+    const lineSpacing = 10;
+
+    // Set column headers
+    doc.text('#', startX, startY);
+    doc.text('Subject Code', startX + 10, startY);
+    doc.text('Subject Name', startX + 50, startY);
+    doc.text('Subject For', startX + 100, startY);
+    doc.text('Subject Type', startX + 130, startY);
+    doc.text('Theory Marks', startX + 160, startY);
+    doc.text('Practical Marks', startX + 190, startY);
+    doc.text('Total Marks', startX + 220, startY);
 
     // Fetch data and populate PDF
     fetch('download-pdf.php')
         .then(response => response.json())
         .then(data => {
+            let y = startY + lineSpacing; // Move below headers
+
+            data.forEach((item, index) => {
+                doc.text((index + 1).toString(), startX, y); // Index column
+                doc.text(item.subject_code, startX + 10, y); // Subject Code
+                doc.text(item.subject_name, startX + 50, y); // Subject Name
+                doc.text(item.subject_for, startX + 100, y); // Subject For (Semester/Year)
+                doc.text(item.subject_type == 1 ? "Core" : "Optional", startX + 130, y); // Subject Type
+                doc.text(item.subject_theory.toString(), startX + 160, y); // Theory Marks
+                doc.text(item.subject_practical.toString(), startX + 190, y); // Practical Marks
+                doc.text((parseInt(item.subject_theory) + parseInt(item.subject_practical)).toString(), startX + 220, y); // Total Marks
+                y += lineSpacing;
+            });
+
             if (data.length === 0) {
-                addText('No Courses Found', 14, 40);
-            } else {
-                let y = 40;
-                data.forEach((item, index) => {
-                    addText((index + 1).toString(), 10, y); // Index
-                    addText(item.course_code, 30, y, 10); // Course Code (max 10 chars)
-                    addText(item.course_name, 70, y, 20); // Course Name (max 20 chars)
-                    addText(item.course_fees, 120, y, 10); // Course Fees (max 10 chars)
-                    addText(`${item.course_total} ${item.course_type == 1 ? 'Semester' : 'Year'}`, 160, y); // Semester/Year
-                    y += 10;
-                });
+                doc.text('No Subjects Found', 14, y);
             }
 
             // Save the PDF
-            doc.save('courses_report.pdf');
+            doc.save('subjects_report.pdf');
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
         });
 });
 
@@ -187,20 +203,24 @@ include "../component/sidebar.php";
                 // Create a new workbook and worksheet
                 const ws = XLSX.utils.json_to_sheet(data.map((item, index) => ({
                     '#': index + 1,
-                    'Course Code': item.course_code,
-                    'Course Name': item.course_name,
-                    'Semester / Year': item.course_total + ' ' + (item.course_type == 1 ? 'Semester' : 'Year'),
-                    'Course Fees': item.course_fees
+                    'Subject Code': item.subject_code,
+                    'Subject Name': item.subject_name,
+                    'Subject For': item.subject_for,
+                    'Subject Type': item.subject_type == 1? "Core":"Practical", // Type
+                    'Theory Marks': item.subject_theory, // Total Marks
+                    'Practical Marks': item.subject_practical, // Replace with actual field name
+                    'Total Marks': (parseInt(item.subject_practical)+parseInt(item.subject_theory)) // Replace with actual field name
                 })));
 
                 const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, 'Courses');
+                XLSX.utils.book_append_sheet(wb, ws, 'Subjects');
 
                 // Save the workbook as an Excel file
-                XLSX.writeFile(wb, 'courses_report.xlsx');
+                XLSX.writeFile(wb, 'subjects_report.xlsx');
             })
             .catch(error => console.error('Error fetching data:', error));
     });
+
     const fetchData = async () => {
         try {
             const response = await fetch('download-pdf.php');
@@ -218,16 +238,19 @@ include "../component/sidebar.php";
 
         // Create a dynamic table with the fetched data
         let printContents = '<table class="table">';
-        printContents += '<thead><tr><th>#</th><th>Course Code</th><th>Course Name</th><th>Semester / Year</th><th>Course Fees</th></tr></thead>';
+        printContents += '<thead><tr><th>#</th><th>Subject Code</th><th>Subject Name</th><th>Subject For</th><th>Total Marks</th><th>Theory Marks</th><th>Practical Marks</th><th>Total Marks</th></tr></thead>';
         printContents += '<tbody>';
         
         data.forEach((item, index) => {
             printContents += `<tr>
                                 <td>${index + 1}</td>
-                                <td>${item.course_code}</td>
-                                <td>${item.course_name}</td>
-                                <td>${item.course_total} ${(item.course_type == 1 ? 'Semester' : 'Year')}</td>
-                                <td>${item.course_fees}</td>
+                                <td>${item.subject_code}</td>
+                                <td>${item.subject_name}</td>
+                                <td>${item.subject_for}</td>
+                                <td>${item.subject_type == 1? "Core":"Practical"}</td>
+                                <td>${item.subject_theory}</td>
+                                <td>${item.subject_practical}</td> <!-- Replace with actual field name -->
+                                <td>${(parseInt(item.subject_practical)+parseInt(item.subject_theory))}</td> <!-- Replace with actual field name -->
                               </tr>`;
         });
 
@@ -245,8 +268,9 @@ include "../component/sidebar.php";
     document.getElementById('print-page').addEventListener('click', function() {
         printTableData();
     });
-
 </script>
+
+
 <?php
 include "../component/footer.php";
 ?>

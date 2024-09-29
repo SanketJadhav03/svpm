@@ -1,5 +1,4 @@
 <?php
-session_start();
 include "../config/connection.php";
 include "../component/header.php";
 include "../component/sidebar.php";
