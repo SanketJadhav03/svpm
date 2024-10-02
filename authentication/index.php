@@ -180,6 +180,9 @@
         <div class="role-buttons">
             <a href="admin.php" class="btn btn-lg btn-secondary" id="admin-login">Admin </a>
             <a href="student.php" class="btn btn-lg btn-secondary" id="student-login">Student </a>
+        </div>
+            <div class="role-buttons">
+            <a href="faculty.php" class="btn btn-lg btn-secondary" id="faculty-login">Faculty </a>
             <a href="faculty.php" class="btn btn-lg btn-secondary" id="faculty-login">Faculty </a>
         </div>
         

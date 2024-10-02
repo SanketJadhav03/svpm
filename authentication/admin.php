@@ -14,7 +14,7 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
     // Validate the credentials
     if ($username === $valid_username && $password === $valid_password) {
         // Set a session variable to indicate successful login
-        $_SESSION['admin'] = true;
+        $_SESSION['role'] = 1;
         $_SESSION['username'] = $username;
 
         // Redirect to a dashboard page or home page

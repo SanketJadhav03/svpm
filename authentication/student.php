@@ -1,9 +1,39 @@
+<?php
+// Start session to store user data
+session_start();
+$base_url = 'http://' . $_SERVER['HTTP_HOST'] . '/svpm/';
+// Simulate a simple user database (you can replace this with a real database)
+$valid_username = "student";
+$valid_password = "student";
+
+// Check if username and password are set in POST request
+if (isset($_POST['username']) && isset($_POST['password'])) {
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+
+    // Validate the credentials
+    if ($username === $valid_username && $password === $valid_password) {
+        // Set a session variable to indicate successful login
+        $_SESSION['role'] = 2;
+        $_SESSION['username'] = $username;
+
+        // Redirect to a dashboard page or home page
+        header("Location: $base_url");
+        exit();
+    } else {
+        // Redirect back to the login form with an error message
+        $error_message = "Invalid roll no or mother name!";
+        header("Location: student.php?error=$error_message");
+        exit();
+    }
+}  
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Login - Professional Design</title>
+    <title>Admin Login - Professional Design</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <style>
@@ -14,7 +44,7 @@
             justify-content: center;
             align-items: center;
             position: relative;
-            background: linear-gradient(to bottom right, #b0e0f0,#4a90e2); /* Light blue gradient */
+            background: linear-gradient(to bottom right, #001f3f, #0074d9); /* Navy blue gradient */
             font-family: 'Arial', sans-serif;
             overflow: hidden; /* Prevent scrolling */
         }
@@ -56,7 +86,20 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             position: relative;
             z-index: 1; /* In front of the splash */
-            transition: transform 0.5s ease; /* Smooth transition for animation */
+            opacity: 0; /* Start with hidden container */
+            transform: translateY(-50px); /* Initial position for entrance animation */
+            animation: entrance-animation 1s ease forwards; /* Apply entrance animation */
+        }
+
+        @keyframes entrance-animation {
+            0% {
+                opacity: 0;
+                transform: translateY(-50px); /* Start above and invisible */
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0); /* End at normal position and fully visible */
+            }
         }
 
         h2 {
@@ -86,27 +129,114 @@
             text-align: center;
             margin-top: 10px; /* Space above the link */
         }
+
+        .back-to-home {
+            margin-top: 20px;
+            display: block;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .back-to-home a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .back-to-home a:hover {
+            color: #0056b3;
+        }
+
+        /* Cracking animation styles */
+        @keyframes crack-animation {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            25% {
+                transform: scale(1.1);
+                opacity: 0.9;
+            }
+            50% {
+                transform: scale(0.9);
+                opacity: 0.7;
+            }
+            75% {
+                transform: scale(1.1);
+                opacity: 0.9;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .crack-effect {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            pointer-events: none; /* Prevent mouse interactions */
+            z-index: 10; /* Above the form */
+            display: none; /* Hidden by default */
+            animation: crack-animation 0.8s ease-in-out forwards; /* Apply crack animation */
+        }
+
+        /* Add the move animation */
+        @keyframes move-animation {
+            0% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        .input-move {
+            animation: move-animation 0.3s ease; /* Apply the move animation */
+        }
     </style>
 </head>
+
+
 <body>
-    <div class="color-splash"></div>
+<div class="color-splash"></div>
     <div class="login-container" id="login-container">
         <h2><i class="fas fa-user-graduate"></i> Student Login</h2>
-        <form id="login-form">
+        
+        <!-- Update form to POST data to login.php -->
+        <form id="login-form" method="POST" action="">
             <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" class="form-control" id="username" placeholder="Enter your username" required>
+                <label for="username">Roll No</label>
+                <input type="text" class="form-control" id="username" name="username" placeholder="Roll No" required>
             </div>
             <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" class="form-control" id="password" placeholder="Enter your password" required>
+                <label for="password">Mother Name</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Mother Name" required>
             </div>
             <button type="submit" class="btn btn-primary login-btn">Login</button>
+
+            <!-- Display any error messages -->
+            <?php if (isset($_GET['error'])): ?>
+                <div class="alert alert-danger mt-2">
+                    <?php echo htmlspecialchars($_GET['error']); ?>
+                </div>
+            <?php endif; ?>
+            
             <div class="success-message" id="success-message">Logged in successfully!</div>
         </form>
+
         <div class="forgot-password">
             <a href="#">Forgot Password?</a>
         </div>
+        <div class="back-to-home">
+            <a href="<?= $base_url ?>authentication/">← Back to Home</a>
+        </div>
+        <div class="crack-effect" id="crack-effect"></div> <!-- Crack effect div -->
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -143,19 +273,23 @@
             createSplash(x, y);
         }, 500); // Adjust interval as needed
 
-        // Handle form submission
-        document.getElementById('login-form').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent the default form submission
-            const container = document.getElementById('login-container');
-            const successMessage = document.getElementById('success-message');
+      
+        // Add input animation on focus
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
 
-            // Add animation class
-            container.classList.add('filled');
-
-            // Show success message after a short delay
+        usernameInput.addEventListener('focus', () => {
+            usernameInput.classList.add('input-move');
             setTimeout(() => {
-                successMessage.style.display = 'block';
-            }, 500); // Delay for scaling effect
+                usernameInput.classList.remove('input-move');
+            }, 300);
+        });
+
+        passwordInput.addEventListener('focus', () => {
+            passwordInput.classList.add('input-move');
+            setTimeout(() => {
+                passwordInput.classList.remove('input-move');
+            }, 300);
         });
     </script>
 </body>

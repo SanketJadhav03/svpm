@@ -13,7 +13,7 @@ session_start();
   </title>
   <?php
 $base_url = 'http://' . $_SERVER['HTTP_HOST'] . '/svpm/';
-if(!isset($_SESSION["admin"]) && !isset($_SESSION["student"])){
+if(!isset($_SESSION["role"])){
   header("Location: $base_url/authentication/");
 }
 ?>
@@ -146,8 +146,8 @@ if(!isset($_SESSION["admin"]) && !isset($_SESSION["student"])){
         </a>
       </li>
       <li class="nav-item">
-    <a class="nav-link" href="logout.php" role="button">
-        <i class="fas fa-sign-out-alt"></i> Logout
+    <a class="btn bg-danger " href="<?= $base_url."logout.php"?>" >
+        <i class="fas  fa-sign-out-alt"></i> 
     </a>
 </li>
 
