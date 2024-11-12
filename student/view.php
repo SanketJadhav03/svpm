@@ -29,7 +29,7 @@ if (!$student) {
                     <img src="<?= $base_url ?>assets/images/student/<?= $student['student_image'] != ""?$student['student_image']:"default.png" ?>" 
                          class="img-fluid rounded-circle border border-light" 
                          alt="Student Image" 
-                         style="width: 150px; height: 150px;">
+                         style="width: 200px; height: 170px;">
                     <h4 class="mt-3"><?= $student['student_first_name'] . ' ' . $student['student_last_name'] ?></h4>
                     <p class="text-muted"><?= $student['student_roll'] ?></p>
                 </div>
