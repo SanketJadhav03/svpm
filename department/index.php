@@ -57,12 +57,11 @@ include "../component/sidebar.php";
                     <tr>
                         <th>#</th>
                         <th>Department Name</th>
-                        <th>Department Code</th>
-                        <th>Description</th>
+                        <th>Code</th>
                         <th>HOD Name</th>
-                        <th>HOD Contact</th>
+                        <th>  Contact</th>
                         <th>Email</th>
-                        <th>Phone</th>
+                        <th>Phone</th> 
                         <th>Action</th>
                     </tr>
                     <?php
@@ -85,14 +84,15 @@ include "../component/sidebar.php";
                     while ($data = mysqli_fetch_array($result)) {
                     ?>
                         <tr>
-                            <td><?= $count += 1 ?></td> 
+                            <td><?= $count += 1 ?></td>
                             <td><?= $data["department_name"] ?></td>
                             <td><?= $data["department_code"] ?></td>
-                            <td><?= $data["department_description"] ?></td>
+                          
+
                             <td><?= $data["department_hod_name"] ?></td>
                             <td><?= $data["department_hod_contact"] ?></td>
                             <td><?= $data["department_email"] ?></td>
-                            <td><?= $data["department_phone"] ?></td>
+                            <td><?= $data["department_phone"] ?></td> 
                             <td>
                                 <a href="edit.php?department_id=<?= $data["department_id"] ?>" class="btn btn-sm shadow btn-info">
                                     <i class="fa fa-pen"></i>
@@ -141,7 +141,9 @@ include "../component/sidebar.php";
 
 <script>
     document.getElementById('download-pdf').addEventListener('click', () => {
-        const { jsPDF } = window.jspdf;
+        const {
+            jsPDF
+        } = window.jspdf;
         const doc = new jsPDF();
 
         const addText = (text, x, y, maxLength = null) => {
@@ -223,7 +225,7 @@ include "../component/sidebar.php";
         let printContents = '<table class="table">';
         printContents += '<thead><tr><th>#</th><th>Department Name</th><th>Department Code</th><th>Description</th><th>HOD Name</th><th>HOD Contact</th><th>Email</th><th>Phone</th></tr></thead>';
         printContents += '<tbody>';
-        
+
         data.forEach((item, index) => {
             printContents += `<tr>
                                 <td>${index + 1}</td> 
