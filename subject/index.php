@@ -57,7 +57,8 @@ include "../component/sidebar.php";
                 <table class="table ">
                     <tr>
                         <th>#</th>
-                        <th>Course Name</th>
+                        <th>Department</th>
+                        <th>Course </th>
                         <th>Subject Code</th>
                         <th>Subject Name</th>
                         <th>Subject For</th>
@@ -71,14 +72,28 @@ include "../component/sidebar.php";
                     $limit = 10;
                     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
                     $offset = ($page - 1) * $limit;
-                    $countQuery = "SELECT COUNT(*) as total FROM `tbl_subjects`";
-                    $selectQuery = "SELECT * FROM `tbl_subjects` INNER JOIN `tbl_courses` ON tbl_courses.course_id = tbl_subjects.subject_course LIMIT $limit OFFSET $offset";
+                    $countQuery = "SELECT COUNT(*) as total FROM `tbl_subjects` INNER JOIN `tbl_course` ON tbl_course.course_id = tbl_subjects.subject_course ";
+                    $selectQuery = "SELECT * FROM `tbl_subjects` INNER JOIN `tbl_course` ON tbl_course.course_id = tbl_subjects.subject_course LEFT JOIN tbl_department ON tbl_course.course_department_id = tbl_department.department_id";
+                    $whereClause = ""; // Initialize as empty
+                   
+                   // Check if the user role exists and is associated with a department
+                   if (isset($_SESSION["user_role"]) && $_SESSION["user_role"] == 4 && isset($_SESSION["department_id"])) {
+                       $department_id = $_SESSION["department_id"];
+                       $whereClause = " WHERE tbl_course.course_department_id = $department_id";
+                   }
+                   $countQuery .= $whereClause;
+                   $selectQuery = $selectQuery . $whereClause . "  ORDER BY course_name LIMIT $limit OFFSET $offset";
                     if (isset($_GET["subject_name"])) {
                         $subject_name = $_GET["subject_name"];
                         $subject_name = mysqli_real_escape_string($conn, $subject_name);
                         $countQuery = "SELECT COUNT(*) as total FROM `tbl_subjects` WHERE `subject_name` LIKE '%$subject_name%'";
-                        $selectQuery = "SELECT * FROM `tbl_subjects` INNER JOIN `tbl_courses` ON tbl_courses.course_id = tbl_subjects.subject_course WHERE `subject_name` LIKE '%$subject_name%' LIMIT $limit OFFSET $offset";
-                    }
+                        $selectQuery = "SELECT * FROM `tbl_subjects` INNER JOIN `tbl_course` ON tbl_course.course_id = tbl_subjects.subject_course LEFT JOIN tbl_department ON tbl_course.course_department_id = tbl_department.department_id WHERE `subject_name` LIKE '%$subject_name%' ";
+                        if (isset($_SESSION["user_role"]) && $_SESSION["user_role"] == 4 && isset($_SESSION["department_id"])) {
+                            $department_id = $_SESSION["department_id"];
+                            $whereClause = " AND tbl_course.course_department_id = $department_id";
+                        } 
+                        $selectQuery = $selectQuery . $whereClause . "  ORDER BY course_name LIMIT $limit OFFSET $offset";
+                     }
                     $countResult = mysqli_query($conn, $countQuery);
                     $totalRecords = mysqli_fetch_assoc($countResult)['total'];
                     $totalPages = ceil($totalRecords / $limit);
@@ -87,6 +102,7 @@ include "../component/sidebar.php";
                     ?>
                         <tr>
                             <td><?= $count += 1 ?></td>
+                            <td><?= $data["department_name"] ?></td>
                             <td><?= $data["course_name"] ?></td>
                             <td><?= $data["subject_code"] ?></td>
                             <td><?= $data["subject_name"]  ?></td>

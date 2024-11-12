@@ -24,7 +24,7 @@ if (isset($_POST["student_save"])) {
 
     // Handle file upload
     if (isset($_FILES["student_image"]["name"])) {
-        $target_dir = "$base_url"+"assets/images/student";
+        $target_dir = $base_url."assets/images/student";
         $imageFileName = basename($_FILES["student_image"]["name"]);
         $target_file = $target_dir . $imageFileName;
         move_uploaded_file($_FILES["student_image"]["tmp_name"], $target_file);
@@ -55,27 +55,41 @@ if (isset($_POST["student_save"])) {
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-3">
+                    <div class="col-4">
                         <label for="">Roll No <span class="text-danger font-weight-bold"> *</span></label>
                         <input value="<?= $dataRoll["student_count"] + 1000 ?>" type="text" style="cursor: not-allowed;" readonly class="form-control font-weight-bold" name="student_roll" id="student_roll" placeholder="Student Roll Numberr">
                     </div>
-                    <div class="col-3">
+                    <div class="col-4">
                         <label for="">Course <span class="text-danger font-weight-bold"> *</span></label>
                         <select name="student_course" id="student_course" class="form-control font-weight-bold">
                             <option value="">Select Course</option>
                             <?php
-                            $allcourse = "SELECT * FROM tbl_courses";
-                            $courseQuery = mysqli_query($conn, $allcourse);
-                            while ($course = mysqli_fetch_array($courseQuery)) {
+                            // Query to get all departments
+                            $alldepartment = "SELECT * FROM tbl_department";
+                            $departmentQuery = mysqli_query($conn, $alldepartment);
+
+                            // Loop through each department
+                            while ($department = mysqli_fetch_array($departmentQuery)) {
+                                // Query to get courses for the current department
+                                $courseQuery = mysqli_query($conn, "SELECT * FROM tbl_course WHERE course_department_id = " . $department['department_id']);
+
+                                // Display department as an optgroup
+                                if (mysqli_num_rows($courseQuery) > 0) {
+                                    echo '<optgroup label="' . $department["department_name"] . '">';
+
+                                    // Loop through each course within this department
+                                    while ($course = mysqli_fetch_array($courseQuery)) {
+                                        echo '<option value="' . $course['course_id'] . '">' . $course["course_name"] . '</option>';
+                                    }
+
+                                    echo '</optgroup>';
+                                }
+                            }
                             ?>
-                                <option value="<?= $course['course_id'] ?>" data-course-duration="<?= $course['course_total'] ?>" 
-                                data-course-type="<?= $course['course_type'] ?>"  data-course-fees="<?= $course['course_fees'] ?>">
-                                    <?= $course["course_name"] ?>
-                                </option>
-                            <?php } ?>
                         </select>
+
                     </div>
-                    <div class="col-2">
+                    <!-- <div class="col-2">
                         <label for="">Course Duration <span class="text-danger font-weight-bold"> *</span></label>
                         <input readonly style="cursor: not-allowed;" type="text" class="form-control font-weight-bold" name="student_duration" id="student_duration" placeholder="Course Duration">
                     </div>
@@ -83,14 +97,14 @@ if (isset($_POST["student_save"])) {
                     <div class="col-2">
                         <label for="">Course Fees <span class="text-danger font-weight-bold"> *</span></label>
                         <input readonly style="cursor: not-allowed;" type="text" class="form-control font-weight-bold" name="student_fees" id="student_fees" placeholder="Course Fees">
-                    </div>
+                    </div> -->
 
-                    <div class="col-2">
+                    <div class="col-4">
                         <label for="">Student Type <span class="text-danger font-weight-bold"> *</span></label>
                         <select name="student_type" id="student_type" class="form-control font-weight-bold">
                             <option value="">Select Type</option>
-                            <option value="Regular">Reuglar</option>
-                            <option value="External">External</option>
+                            <option value="Part-time">Part-time</option>
+                            <option value="Full-time">Full-time</option>
                         </select>
                     </div>
                     <div class="col-3 mt-4  ">
@@ -133,7 +147,7 @@ if (isset($_POST["student_save"])) {
                     </div>
                     <div class="col-2 mt-4  ">
                         <label for="">Gender <span class="text-danger font-weight-bold"> *</span></label>
-                        <select name="student_gender"  class="form-control font-weight-bold" id="student_gender">
+                        <select name="student_gender" class="form-control font-weight-bold" id="student_gender">
                             <option value="">Select Gender</option>
                             <option value="Female">Female</option>
                             <option value="Male">Male</option>
@@ -141,7 +155,7 @@ if (isset($_POST["student_save"])) {
                     </div>
                     <div class="col-2 mt-4  ">
                         <label for="">State <span class="text-danger font-weight-bold"> *</span></label>
-                        <input type="text" class="form-control font-weight-bold" name="student_state" id="student_state" value="Maharashtra" style="cursor: not-allowed;" disabled>
+                        <input type="text" class="form-control font-weight-bold" name="student_state" id="student_state" value="Maharashtra" style="cursor: not-allowed;" readonly>
                     </div>
                     <div class="col-2 mt-4  ">
                         <label for="">City <span class="text-danger font-weight-bold"> *</span></label>
@@ -190,17 +204,7 @@ if (isset($_POST["student_save"])) {
             event.preventDefault();
         }
     }
-    $(document).ready(function() {
-        $('#student_course').change(function() {
-            var selectedCourse = $(this).find('option:selected'); // Get the selected option
-            var courseDuration = selectedCourse.data('course-duration'); // Get course duration from data attribute
-            var courseFees = selectedCourse.data('course-fees'); // Get course fees from data attribute
-            var courseType = selectedCourse.data('course-type'); // Get course fees from data attribute
-            // Set the values of the inputs
-            $('#student_duration').val(courseDuration ? courseDuration + (courseType == 1? " Semester":" Year") : 'N/A');
-            $('#student_fees').val(courseFees ? courseFees : 'N/A');
-        });
-    });
+
 
     function showImage() {
         const image = document.getElementById('show_image');

@@ -3,7 +3,15 @@ $title = "Admin Dashboard";
 include "config/connection.php";
 include("component/header.php");
 include "component/sidebar.php";
-
+if (isset($_SESSION["user_role"])) {
+  if ($_SESSION["user_role"] == 3) {
+    $temp_student_url = $base_url . "dashboard/student.php";
+    echo "<script>window.location = '$temp_student_url'</script>";
+  } else if ($_SESSION["user_role"] == 4) {
+    $temp_student_url = $base_url . "dashboard/department.php";
+    echo "<script>window.location = '$temp_student_url'</script>";
+  }
+}
 
 // Fetch active notices from the database
 $notices = [];
@@ -19,75 +27,58 @@ if ($result) {
 <style>
   .notices-marquee {
     height: 330px;
-    /* Set a fixed height for the marquee */
     overflow: hidden;
-    /* Hide overflow */
     position: relative;
-    /* Position relative for absolute positioning of content */
     background-color: #f1f1f1;
-    /* Light gray background */
-    /* Blue border */
     border-radius: 8px;
-    /* Rounded corners */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    /* Soft shadow */
     padding: 10px;
-    /* Padding inside the marquee */
   }
-
 
   .notice-item {
     margin-bottom: 20px;
-    /* Space between notices */
     display: block;
-    /* Align notices in a block for vertical layout */
     padding: 10px;
-    /* Padding around notice */
     border-bottom: 1px solid #ddd;
-    /* Bottom border for separation */
     background-color: #ffffff;
-    /* White background for each notice */
     border-radius: 4px;
-    /* Slightly rounded corners for notices */
     transition: transform 0.2s ease;
-    /* Transition effect for hover */
+    font-size: 14px;
+    /* Initial font size */
   }
 
-  /* Change background on hover */
   .notice-item:hover {
-    transform: scale(1.02);
+    transform: scale(1.1);
     /* Slightly enlarge on hover */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     /* Darker shadow on hover */
+    font-size: 16px;
+    /* Increase font size on hover */
   }
 
-  /* Vertical scrolling keyframes */
+  /* New styles for the sliding animation */
   @keyframes scroll-vertical {
     0% {
       transform: translateY(100%);
-      /* Start from the bottom */
     }
 
     100% {
       transform: translateY(-100%);
-      /* End at the top */
     }
   }
 
-  /* Optional: Text Styling */
-  .notice-item span {
-    font-weight: bold;
-    /* Bold notice text */
-    color: #333;
-    /* Dark gray color for text */
+  .notices-content {
+    display: flex;
+    flex-direction: column;
+    animation: scroll-vertical 15s linear infinite;
+    animation-play-state: running;
+    /* Default state is running */
   }
 
-  /* Optional: Date and Time Styling */
-  .notice-date {
-    font-size: 0.85em;
-    /* Smaller font for date */
-    color: #666;
-    /* Lighter gray for date */
+  .notices-content:hover {
+    animation-play-state: paused;
+    padding: 10px;
+    /* Pause animation on hover */
   }
 </style>
 
@@ -100,7 +91,6 @@ if ($result) {
         <div class="col-12 text-center">
           <h1 class="h1">Admin Dashboard </h1>
         </div><!-- /.col -->
-
       </div><!-- /.row -->
     </div><!-- /.container-fluid -->
   </div>
@@ -133,11 +123,16 @@ if ($result) {
             </a>
 
             <div class="info-box-content">
+              <?php
+              $dataCourse = "SELECT COUNT(*) AS course_count FROM tbl_course;";
+              $dataCourse = mysqli_fetch_array(mysqli_query($conn, $dataCourse));
+              ?>
               <span class="info-box-text">Courses</span>
               <span class="info-box-number">
-                10
-              </span>
+              <?= $dataCourse["course_count"] ?>
+              </span> 
             </div>
+            
             <!-- /.info-box-content -->
           </div>
           <!-- /.info-box -->
@@ -148,9 +143,14 @@ if ($result) {
             <a href="<?= $base_url . "faculty/" ?>" class="info-box-icon bg-danger elevation-1"> <i class=" fas fa-chalkboard"></i></a>
 
             <div class="info-box-content">
-
+            <?php
+              $dataFaculty = "SELECT COUNT(*) AS faculty_count FROM tbl_faculty;";
+              $dataFaculty = mysqli_fetch_array(mysqli_query($conn, $dataFaculty));
+              ?>
               <span class="info-box-text">Faculty</span>
-              <span class="info-box-number">0</span>
+              <span class="info-box-number">
+              <?= $dataFaculty["faculty_count"] ?>
+              </span>
             </div>
             <!-- /.info-box-content -->
           </div>
@@ -211,23 +211,23 @@ if ($result) {
                 </div>
                 <div class="card-body">
                   <div class="notices-marquee">
-                    <div class="row">
-                      <?php foreach ($notices as $notice): ?>
-                        <div class="col-md-4">
-                          <span class="notice-item">
-                          <i class="fas fa-thumbtack" ></i>&nbsp; 
-                          <b><?= htmlspecialchars($notice['notice_title']) ?> </b>
-                            <div class="notice-date"> - <?= date('F j, Y g:i A', strtotime($notice['notice_date'])) ?></div>
-                            <div>
-                              - <?= htmlspecialchars($notice['notice_description']) ?>
-                            </div>
-                          </span>
-                        </div>
-                       
-                      <?php endforeach; ?>
+                    <div class="notices-content">
+                      <div class="row">
+                        <?php foreach ($notices as $notice): ?>
+                          <div class="col-md-4">
+                            <span class="notice-item">
+                              <i class="fas fa-thumbtack"></i>&nbsp;
+                              <b><?= htmlspecialchars($notice['notice_title']) ?></b>
+                              <div class="notice-date"> - <?= date('F j, Y g:i A', strtotime($notice['notice_date'])) ?></div>
+                              <div> - <?= htmlspecialchars($notice['notice_description']) ?></div>
+                            </span>
+                          </div>
+                        <?php endforeach; ?>
+                      </div>
                     </div>
                   </div>
                 </div>
+
                 <!-- /.card-body -->
 
               </div>
@@ -273,7 +273,7 @@ if ($result) {
                   $limit = 10;
 
 
-                  $selectQuery = "SELECT * FROM `tbl_students` INNER JOIN `tbl_courses` ON tbl_courses.course_id = tbl_students.student_course ORDER BY `student_id` DESC  LIMIT $limit  ";
+                  $selectQuery = "SELECT * FROM `tbl_students` INNER JOIN `tbl_course` ON tbl_course.course_id = tbl_students.student_course ORDER BY `student_id` DESC  LIMIT $limit  ";
 
                   $result = mysqli_query($conn, $selectQuery);
                   while ($data = mysqli_fetch_array($result)) {
@@ -326,7 +326,13 @@ if ($result) {
   <!-- /.content -->
 </div>
 <!-- /.content-wrapper -->
-
+<script>
+  window.onload = function() {
+    const marquee = document.querySelector('.notices-content');
+    const speed = 30000; // Speed of the animation (higher value = slower)
+    marquee.style.animationDuration = `${speed / 1000}s`;
+  };
+</script>
 <?php
 include "component/footer.php";
 ?>

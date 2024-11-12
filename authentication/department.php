@@ -8,13 +8,13 @@ $password = "";
 $dbname = "collegemanagement";   
 $conn = new mysqli($servername, $username, $password, $dbname);
  
-if (isset($_POST['faculty_email']) && isset($_POST['faculty_password'])) {
-    $faculty_email = $_POST['faculty_email'];
-    $faculty_password = $_POST['faculty_password'];
+if (isset($_POST['department_email']) && isset($_POST['department_password'])) {
+    $department_email = $_POST['department_email'];
+    $department_password = $_POST['department_password'];
 
     // Prepare SQL query to prevent SQL injection
-    $stmt = $conn->prepare("SELECT * FROM tbl_faculty WHERE faculty_email = ?");
-    $stmt->bind_param("s", $faculty_email);
+    $stmt = $conn->prepare("SELECT * FROM tbl_department WHERE department_email = ?");
+    $stmt->bind_param("s", $department_email);
 
     // Execute the statement
     $stmt->execute();
@@ -22,16 +22,16 @@ if (isset($_POST['faculty_email']) && isset($_POST['faculty_password'])) {
 
     // Validate the credentials
     if ($result->num_rows > 0) {
-        // Fetch the faculty data
-        $faculty = $result->fetch_assoc();
+        // Fetch the department data
+        $department = $result->fetch_assoc();
 
         // Verify the hashed password
-        if ($faculty_password ==  $faculty['faculty_password']) {
+        if ($department_password ==  $department['department_password']) {
 
             // Set session variables
-            $_SESSION['user_role'] = 4;  // Assuming role 4 is for facultys
-            $_SESSION['username'] = $faculty['faculty_name'];
-            $_SESSION['faculty_id'] = $faculty['faculty_id'];
+            $_SESSION['user_role'] = 4;  // Assuming role 4 is for departments
+            $_SESSION['username'] = $department['department_name'];
+            $_SESSION['department_id'] = $department['department_id'];
 
             // Redirect to the dashboard or home page
             header("Location: $base_url");
@@ -39,13 +39,13 @@ if (isset($_POST['faculty_email']) && isset($_POST['faculty_password'])) {
         } else {
             // Incorrect password
             $error_message = "Invalid username or password!";
-            header("Location: faculty.php?error=" . urlencode($error_message));
+            header("Location: department.php?error=" . urlencode($error_message));
             exit();
         }
     } else {
-        // No faculty found with the entered email
-        $error_message = "Faculty not found!";
-        header("Location: faculty_login.php?error=" . urlencode($error_message));
+        // No department found with the entered email
+        $error_message = "Department not found!";
+        header("Location: department_login.php?error=" . urlencode($error_message));
         exit();
     }
 
@@ -59,7 +59,7 @@ if (isset($_POST['faculty_email']) && isset($_POST['faculty_password'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Faculty Login</title>
+    <title>Department Login</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <style>
@@ -232,17 +232,17 @@ if (isset($_POST['faculty_email']) && isset($_POST['faculty_password'])) {
 <body>
 <div class="color-splash"></div>
     <div class="login-container" id="login-container">
-        <h2><i class="fas fa-user-tie"></i> Faculty Login</h2>
+        <h2><i class="fas fa-building"></i> Department Login</h2>
         
         <!-- Update form to POST data to login.php -->
         <form id="login-form" method="POST" action="">
             <div class="form-group">
                 <label for="username">Username</label>
-                <input type="text" class="form-control" id="username" name="faculty_email" placeholder="Enter your username" required>
+                <input type="text" class="form-control" id="username" name="department_email" placeholder="Enter your username" required>
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" class="form-control" id="password" name="faculty_password" placeholder="Enter your password" required>
+                <input type="password" class="form-control" id="password" name="department_password" placeholder="Enter your password" required>
             </div>
             <button type="submit" class="btn btn-primary login-btn">Login</button>
 

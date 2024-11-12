@@ -7,7 +7,7 @@ include "../component/sidebar.php";
 $student_id = $_GET['student_id'];
 
 // Fetch the student details from the database
-$query = "SELECT * FROM tbl_students INNER JOIN tbl_courses ON tbl_students.student_course = tbl_courses.course_id  WHERE student_id = $student_id";
+$query = "SELECT * FROM tbl_students INNER JOIN tbl_course ON tbl_students.student_course = tbl_course.course_id  WHERE student_id = $student_id";
 $student = mysqli_fetch_array(mysqli_query($conn, $query));
 
 // Check if the form is submitted
@@ -68,28 +68,43 @@ if (isset($_POST["student_update"])) {
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-3">
+                    <div class="col-4">
                         <label for="">Roll No <span class="text-danger font-weight-bold"> *</span></label>
                         <input value="<?= $student['student_roll'] ?>" type="text" readonly class="form-control font-weight-bold" name="student_roll" id="student_roll">
                     </div>
-                    <div class="col-3">
+                    <div class="col-4">
                         <label for="">Course <span class="text-danger font-weight-bold"> *</span></label>
                         <select name="student_course" id="student_course" class="form-control font-weight-bold">
-                            <option value="">Select Course</option>
-                            <?php
-                            $allcourse = "SELECT * FROM tbl_courses";
-                            $courseQuery = mysqli_query($conn, $allcourse);
-                            while ($course = mysqli_fetch_array($courseQuery)) {
-                                $selected = $course['course_id'] == $student['student_course'] ? 'selected' : '';
-                                ?>
-                                <option value="<?= $course['course_id'] ?>" data-course-duration="<?= $course['course_total'] ?>" 
-                                    data-course-type="<?= $course['course_type'] ?>" data-course-fees="<?= $course['course_fees'] ?>" <?= $selected ?>>
-                                    <?= $course["course_name"] ?>
-                                </option>
-                            <?php } ?>
-                        </select>
+    <option value="">Select Course</option>
+    <?php
+    // Query to fetch all departments
+    $alldepartment = "SELECT * FROM tbl_department";
+    $departmentQuery = mysqli_query($conn, $alldepartment);
+
+    // Loop through each department
+    while ($department = mysqli_fetch_array($departmentQuery)) {
+        ?>
+        <optgroup label="<?= $department["department_name"] ?>">
+            <?php
+            // Query to fetch courses under the current department
+            $allcourse = "SELECT * FROM tbl_course WHERE course_department_id = " . $department['department_id'];
+            $courseQuery = mysqli_query($conn, $allcourse);
+
+            // Loop through each course in this department
+            while ($course = mysqli_fetch_array($courseQuery)) {
+                // Check if the course_id matches the student's selected course
+                $selected = ($course['course_id'] == $student['student_course']) ? 'selected' : '';
+                ?>
+                <option value="<?= $course['course_id'] ?>" <?= $selected ?>>
+                    <?= $course["course_name"] ?>
+                </option>
+            <?php } ?>
+        </optgroup>
+    <?php } ?>
+</select>
+
                     </div>
-                    <div class="col-2">
+                    <!-- <div class="col-2">
                         <label for="">Course Duration <span class="text-danger font-weight-bold"> *</span></label>
                         <input value="<?= $student['course_total']." ".($student['course_type'] == 1 ? "Semester":"Year") ?>" readonly style="cursor: not-allowed;" type="text" class="form-control font-weight-bold" name="student_duration" id="student_duration" placeholder="Course Duration">
                     </div>
@@ -97,14 +112,14 @@ if (isset($_POST["student_update"])) {
                     <div class="col-2">
                         <label for="">Course Fees <span class="text-danger font-weight-bold"> *</span></label>
                         <input value="<?= $student['course_fees'] ?>" readonly style="cursor: not-allowed;" type="text" class="form-control font-weight-bold" name="student_fees" id="student_fees" placeholder="Course Fees">
-                    </div>
+                    </div> -->
 
-                    <div class="col-2">
+                    <div class="col-4">
                         <label for="">Student Type <span class="text-danger font-weight-bold"> *</span></label>
                         <select name="student_type" id="student_type" class="form-control font-weight-bold">
                             <option value="">Select Type</option>
-                            <option value="Regular" <?= $student['student_type'] == 'Regular' ? 'selected' : '' ?>>Regular</option>
-                            <option value="External" <?= $student['student_type'] == 'External' ? 'selected' : '' ?>>External</option>
+                            <option value="Part-time" <?= $student['student_type'] == 'Part-time' ? 'selected' : '' ?>>Part-time</option>
+                            <option value="Full-time" <?= $student['student_type'] == 'Full-time' ? 'selected' : '' ?>>Full-time</option>
                         </select>
                     </div>
 
@@ -144,7 +159,7 @@ if (isset($_POST["student_update"])) {
 
                     <div class="col-3 mt-4  ">
                         <label for="">State <span class="text-danger font-weight-bold"> *</span></label>
-                        <input value="<?= $student['student_state'] ?>" type="text" class="form-control font-weight-bold" name="student_state" id="student_state" placeholder="State">
+                        <input readonly value="<?= $student['student_state'] ?>" type="text" class="form-control font-weight-bold" name="student_state" id="student_state" placeholder="State">
                     </div>
                     <div class="col-3 mt-4  ">
                         <label for="">City <span class="text-danger font-weight-bold"> *</span></label>

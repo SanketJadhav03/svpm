@@ -32,12 +32,19 @@
                with font-awesome or any other icon font library -->
 
                <?php 
-               if($_SESSION["role"]==1){
+               if($_SESSION["user_role"]==1){
                ?>
           <li class="nav-item">
             <a href="<?php echo $base_url; ?>index.php" class="nav-link">
               <i class="nav-icon fas fa-chart-pie"></i>
               <p>Dashboard</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="<?php echo $base_url; ?>department/index.php" class="nav-link">
+            <i class="nav-icon fas fa-building"></i>
+
+              <p>Department</p>
             </a>
           </li>
           <li class="nav-item">
@@ -68,6 +75,13 @@
             </a>
           </li>
           <li class="nav-item">
+            <a href="<?php echo $base_url; ?>attendence/attendencelist.php" class="nav-link">
+            <i class="nav-icon fas fa-calendar-check"></i>
+
+              <p>Attendence</p>
+            </a>
+          </li>
+          <li class="nav-item">
                 <a href="<?php echo $base_url; ?>faculty/index.php" class="nav-link">
                 <i class="nav-icon fas fa-chalkboard"></i>
 
@@ -83,7 +97,7 @@
               </li>
                
                
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-users"></i>
               <p>
@@ -108,91 +122,93 @@
               
             </ul>
 
-          </li>
+          </li> -->
            <?php
                }
            ?>
-               
-          <!-- <li class="nav-item">
+                  <?php 
+               if($_SESSION["user_role"]==3){
+               ?>
+          <li class="nav-item">
+            <a href="<?php echo $base_url; ?>dashboard/student.php" class="nav-link">
+              <i class="nav-icon fas fa-chart-pie"></i>
+              <p>Dashboard</p>
+            </a>
+          </li> 
+          <li class="nav-item">
+            <a href="<?php echo $base_url; ?>student/attendence.php" class="nav-link">
+              <i class="nav-icon fas fa-calendar-check"></i>
+              <p>Attendance</p>
+            </a>
+          </li> 
+          <li class="nav-item">
+            <a href="<?php echo $base_url; ?>student/coursedetails.php" class="nav-link">
+              <i class="nav-icon fas fa-book"></i>
+              <p>Course Details</p>
+            </a>
+          </li> 
+          <li class="nav-item">
+            <a href="<?php echo $base_url; ?>student/idcard.php?student_id=<?php echo isset($_SESSION["student_id"])?$_SESSION["student_id"]:"";?>" class="nav-link">
+              <i class="nav-icon fas fa-id-card"></i>
+              <p>Generate Id</p>
+            </a>
+          </li> 
+          <?php
+               }
+          ?>
+
+<?php 
+               if($_SESSION["user_role"]==4){
+               ?>
+          <li class="nav-item">
+            <a href="<?php echo $base_url; ?>dashboard/department.php" class="nav-link">
+              <i class="nav-icon fas fa-chart-pie"></i>
+              <p>Dashboard</p>
+            </a>
+          </li> 
+          <li class="nav-item">
+            <a href="<?php echo $base_url; ?>courses/index.php" class="nav-link">
+            <i class="nav-icon fas fa-book"></i>
+
+              <p>Courses</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="<?php echo $base_url; ?>subject/index.php" class="nav-link"> 
+            <i class="nav-icon fas fa-file-alt"></i>
+
+              <p>Subject</p>
+            </a>
+          </li> 
+          <?php
+               }
+          ?>
+          <li class="nav-item">
             <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-cog"></i>
+              <i class="nav-icon fa fa-clock"></i>
               <p>
-                Setting's
+                Manage Exam's 
                 <i class="right fas fa-angle-left"></i>
               </p>
             </a>
             <ul class="nav nav-treeview">
+                
               <li class="nav-item">
                 <a href="pages/charts/chartjs.html" class="nav-link">
                   <i class="fas fa-long-arrow-alt-right nav-icon"></i>
-                  <p>Department</p>
+                  <p>Question Paper's</p>
                 </a>
               </li>
               <li class="nav-item">
                 <a href="pages/charts/chartjs.html" class="nav-link">
                   <i class="fas fa-long-arrow-alt-right nav-icon"></i>
-                  <p>Course</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="pages/charts/chartjs.html" class="nav-link">
-                  <i class="fas fa-long-arrow-alt-right nav-icon"></i>
-                  <p>Interested</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="pages/charts/chartjs.html" class="nav-link">
-                  <i class="fas fa-long-arrow-alt-right nav-icon"></i>
-                  <p>Education</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="pages/charts/chartjs.html" class="nav-link">
-                  <i class="fas fa-long-arrow-alt-right nav-icon"></i>
-                  <p>Inquiry For</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="pages/charts/chartjs.html" class="nav-link">
-                  <i class="fas fa-long-arrow-alt-right nav-icon"></i>
-                  <p>Inquiry Status</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="pages/charts/chartjs.html" class="nav-link">
-                  <i class="fas fa-long-arrow-alt-right nav-icon"></i>
-                  <p>source</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="pages/charts/chartjs.html" class="nav-link">
-                  <i class="fas fa-long-arrow-alt-right nav-icon"></i>
-                  <p>Shift</p>
-                </a>
-
-              </li>
-              <li class="nav-item">
-                <a href="pages/charts/chartjs.html" class="nav-link">
-                  <i class="fas fa-long-arrow-alt-right nav-icon"></i>
-                  <p>Payment Modes</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="pages/charts/chartjs.html" class="nav-link">
-                  <i class="fas fa-long-arrow-alt-right nav-icon"></i>
-                  <p>City</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="pages/charts/chartjs.html" class="nav-link">
-                  <i class="fas fa-long-arrow-alt-right nav-icon"></i>
-                  <p>Batch For</p>
+                  <p>Shedule Test</p>
                 </a>
               </li>
             </ul>
 
           </li>
-            -->
+           
          
              
         </ul>

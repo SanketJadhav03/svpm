@@ -11,7 +11,6 @@ include "../component/sidebar.php";
             </div>
             <form action="">
                 <div class="row justify-content-end">
-
                     <div class="col-2 font-weight-bold">
                         Course Name
                         <input type="text" name="course_name" value="<?= isset($_GET["course_name"]) ? $_GET["course_name"] : "" ?>" class="form-control font-weight-bold" placeholder="Course Name">
@@ -34,7 +33,7 @@ include "../component/sidebar.php";
                     </div>
                     <div class="col-2 text-right font-weight-bold">
                         <br>
-                        <a href="create.php" class="font-weight-bold  w-100 shadow btn  btn-success"> <i class="fas fa-plus"></i>&nbsp; Add Course</a>
+                        <a href="create.php" class="font-weight-bold w-100 shadow btn btn-success"> <i class="fas fa-plus"></i>&nbsp; Add Course</a>
                     </div>
                 </div>
             </form>
@@ -59,35 +58,54 @@ include "../component/sidebar.php";
                         <th>#</th>
                         <th>Course Code</th>
                         <th>Course Name</th>
-                        <th>Semester / Year</th>
-                        <th>Course Fees</th>
+                        <th>Credits</th>
+                        <th>Course Duration</th>
+                        <th>Department</th>
                         <th>Action</th>
                     </tr>
                     <?php
-                    $count = 0;
-                    $limit = 10;
-                    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-                    $offset = ($page - 1) * $limit;
-                    $countQuery = "SELECT COUNT(*) as total FROM `tbl_courses`";
-                    $selectQuery = "SELECT * FROM `tbl_courses` LIMIT $limit OFFSET $offset";
-                    if (isset($_GET["course_name"])) {
-                        $course_name = $_GET["course_name"];
-                        $course_name = mysqli_real_escape_string($conn, $course_name);
-                        $countQuery = "SELECT COUNT(*) as total FROM `tbl_courses` WHERE `course_name` LIKE '%$course_name%'";
-                        $selectQuery = "SELECT * FROM `tbl_courses` WHERE `course_name` LIKE '%$course_name%' LIMIT $limit OFFSET $offset";
-                    }
-                    $countResult = mysqli_query($conn, $countQuery);
-                    $totalRecords = mysqli_fetch_assoc($countResult)['total'];
-                    $totalPages = ceil($totalRecords / $limit);
-                    $result = mysqli_query($conn, $selectQuery);
+                   $count = 0;
+                   $limit = 10;
+                   $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+                   $offset = ($page - 1) * $limit;
+                   $course_name = isset($_GET["course_name"]) ? $_GET["course_name"] : '';
+                   
+                   $baseQuery = "SELECT tbl_course.*, tbl_department.department_name FROM `tbl_course`
+                                 LEFT JOIN tbl_department ON tbl_course.course_department_id = tbl_department.department_id";
+                   
+                   $countQuery = "SELECT COUNT(*) as total FROM `tbl_course`";
+                   $whereClause = ""; // Initialize as empty
+                   
+                   // Check if the user role exists and is associated with a department
+                   if (isset($_SESSION["user_role"]) && $_SESSION["user_role"] == 4 && isset($_SESSION["department_id"])) {
+                       $department_id = $_SESSION["department_id"];
+                       $whereClause = " WHERE tbl_course.course_department_id = $department_id";
+                   }
+                   
+                   // Apply course name filter if provided
+                   if (!empty($course_name)) {
+                       $course_name = mysqli_real_escape_string($conn, $course_name);
+                       $whereClause .= (!empty($whereClause) ? " AND" : " WHERE") . " tbl_course.course_name LIKE '%$course_name%'";
+                   }
+                   
+                   // Construct the final queries with the condition
+                   $countQuery .= $whereClause;
+                   $selectQuery = $baseQuery . $whereClause . " LIMIT $limit OFFSET $offset";
+                   
+                   $countResult = mysqli_query($conn, $countQuery);
+                   $totalRecords = mysqli_fetch_assoc($countResult)['total'];
+                   $totalPages = ceil($totalRecords / $limit);
+                   $result = mysqli_query($conn, $selectQuery);
+                   
                     while ($data = mysqli_fetch_array($result)) {
                     ?>
                         <tr>
                             <td><?= $count += 1 ?></td>
                             <td><?= $data["course_code"] ?></td>
                             <td><?= $data["course_name"] ?></td>
-                            <td><?= $data["course_total"] . " " . ($data["course_type"] == 1 ? "Semester" : "Year") ?></td>
-                            <td><?= $data["course_fees"] ?></td>
+                            <td><?= $data["course_credits"] ?></td>
+                            <td><?= $data["course_duration"]." Semester" ?></td>
+                            <td><?= $data["department_name"] ?></td>
                             <td>
                                 <a href="edit.php?course_id=<?= $data["course_id"] ?>" class="btn btn-sm shadow btn-info">
                                     <i class="fa fa-pen"></i>
@@ -104,7 +122,7 @@ include "../component/sidebar.php";
                     if ($count == 0) {
                     ?>
                         <tr>
-                            <td colspan="5" class="font-weight-bold text-center">
+                            <td colspan="6" class="font-weight-bold text-center">
                                 <span class="text-danger">Courses Not Found.</span>
                             </td>
                         </tr>
@@ -150,7 +168,7 @@ include "../component/sidebar.php";
     addText('Course Report', 14, 16);
 
     // Table headers
-    const headers = ['#', 'Course Code', 'Course Name', 'Course Fees', 'Semester / Year'];
+    const headers = ['#', 'Course Code', 'Course Name', 'Credits', 'Department'];
     const positions = [10, 30, 70, 120, 160];
     
     doc.setFontSize(12);
@@ -168,8 +186,8 @@ include "../component/sidebar.php";
                     addText((index + 1).toString(), 10, y); // Index
                     addText(item.course_code, 30, y, 10); // Course Code (max 10 chars)
                     addText(item.course_name, 70, y, 20); // Course Name (max 20 chars)
-                    addText(item.course_fees, 120, y, 10); // Course Fees (max 10 chars)
-                    addText(`${item.course_total} ${item.course_type == 1 ? 'Semester' : 'Year'}`, 160, y); // Semester/Year
+                    addText(item.course_credits, 120, y); // Credits
+                    addText(item.department_name, 160, y); // Department
                     y += 10;
                 });
             }
@@ -189,8 +207,8 @@ include "../component/sidebar.php";
                     '#': index + 1,
                     'Course Code': item.course_code,
                     'Course Name': item.course_name,
-                    'Semester / Year': item.course_total + ' ' + (item.course_type == 1 ? 'Semester' : 'Year'),
-                    'Course Fees': item.course_fees
+                    'Credits': item.course_credits,
+                    'Department': item.department_name
                 })));
 
                 const wb = XLSX.utils.book_new();
@@ -201,6 +219,7 @@ include "../component/sidebar.php";
             })
             .catch(error => console.error('Error fetching data:', error));
     });
+
     const fetchData = async () => {
         try {
             const response = await fetch('download-pdf.php');
@@ -218,7 +237,7 @@ include "../component/sidebar.php";
 
         // Create a dynamic table with the fetched data
         let printContents = '<table class="table">';
-        printContents += '<thead><tr><th>#</th><th>Course Code</th><th>Course Name</th><th>Semester / Year</th><th>Course Fees</th></tr></thead>';
+        printContents += '<thead><tr><th>#</th><th>Course Code</th><th>Course Name</th><th>Credits</th><th>Department</th></tr></thead>';
         printContents += '<tbody>';
         
         data.forEach((item, index) => {
@@ -226,8 +245,8 @@ include "../component/sidebar.php";
                                 <td>${index + 1}</td>
                                 <td>${item.course_code}</td>
                                 <td>${item.course_name}</td>
-                                <td>${item.course_total} ${(item.course_type == 1 ? 'Semester' : 'Year')}</td>
-                                <td>${item.course_fees}</td>
+                                <td>${item.course_credits}</td>
+                                <td>${item.department_name}</td>
                               </tr>`;
         });
 

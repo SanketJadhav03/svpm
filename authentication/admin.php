@@ -14,7 +14,7 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
     // Validate the credentials
     if ($username === $valid_username && $password === $valid_password) {
         // Set a session variable to indicate successful login
-        $_SESSION['role'] = 1;
+        $_SESSION['user_role'] = 1;
         $_SESSION['username'] = $username;
 
         // Redirect to a dashboard page or home page
@@ -33,7 +33,7 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login - Professional Design</title>
+    <title>Admin Login</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <style>
@@ -234,7 +234,7 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
             <a href="#">Forgot Password?</a>
         </div>
         <div class="back-to-home">
-            <a href="/">← Back to Home</a>
+            <a href="<?= $base_url ?>authentication/">← Back to Home</a>
         </div>
         <div class="crack-effect" id="crack-effect"></div> <!-- Crack effect div -->
     </div>

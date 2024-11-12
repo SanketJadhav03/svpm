@@ -7,7 +7,7 @@ include "../component/sidebar.php";
 $student_id = $_GET['student_id'];
 
 // Fetch the student details from the database
-$query = "SELECT * FROM tbl_students INNER JOIN tbl_courses ON tbl_courses.course_id = tbl_students.student_course WHERE student_id = $student_id";
+$query = "SELECT * FROM tbl_students INNER JOIN tbl_course ON tbl_course.course_id = tbl_students.student_course WHERE student_id = $student_id";
 $student = mysqli_fetch_array(mysqli_query($conn, $query));
 
 if (!$student) {
@@ -26,7 +26,7 @@ if (!$student) {
         <div class="card-body">
             <div class="row">
                 <div class="col-md-4 text-center">
-                    <img src="<?= $base_url ?>assets/images/student/<?= $student['student_image'] ?>" 
+                    <img src="<?= $base_url ?>assets/images/student/<?= $student['student_image'] != ""?$student['student_image']:"default.png" ?>" 
                          class="img-fluid rounded-circle border border-light" 
                          alt="Student Image" 
                          style="width: 150px; height: 150px;">

@@ -62,8 +62,7 @@ include "../component/sidebar.php";
                         <th>Student Name</th>
                         <th>Email</th>
                         <th>Contact</th>
-                        <th>Course</th>
-                        <th>Duration</th> 
+                        <th>Course</th> 
                         <th>Action</th>
                     </tr>
                     <?php
@@ -72,12 +71,12 @@ include "../component/sidebar.php";
                     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
                     $offset = ($page - 1) * $limit;
                     $countQuery = "SELECT COUNT(*) as total FROM `tbl_students`";
-                    $selectQuery = "SELECT * FROM `tbl_students` INNER JOIN `tbl_courses` ON tbl_courses.course_id = tbl_students.student_course LIMIT $limit OFFSET $offset";
+                    $selectQuery = "SELECT * FROM `tbl_students` INNER JOIN `tbl_course` ON tbl_course.course_id = tbl_students.student_course LIMIT $limit OFFSET $offset";
                     if (isset($_GET["student_name"])) {
                         $student_name = $_GET["student_name"];
                         $student_name = mysqli_real_escape_string($conn, $student_name);
                         $countQuery = "SELECT COUNT(*) as total FROM `tbl_students` WHERE `student_first_name` LIKE '%$student_name%' OR `student_last_name` LIKE '%$student_name%'";
-                        $selectQuery = "SELECT * FROM `tbl_students` INNER JOIN `tbl_courses` ON tbl_courses.course_id = tbl_students.student_course WHERE `student_first_name` LIKE '%$student_name%' OR `student_last_name` LIKE '%$student_name%' LIMIT $limit OFFSET $offset";
+                        $selectQuery = "SELECT * FROM `tbl_students` INNER JOIN `tbl_course` ON tbl_course.course_id = tbl_students.student_course WHERE `student_first_name` LIKE '%$student_name%' OR `student_last_name` LIKE '%$student_name%' LIMIT $limit OFFSET $offset";
                     }
                     $countResult = mysqli_query($conn, $countQuery);
                     $totalRecords = mysqli_fetch_assoc($countResult)['total'];
@@ -88,14 +87,14 @@ include "../component/sidebar.php";
                         <tr>
                             <td><?= $count += 1 ?></td>
                             <td>
-                                <img src="<?= $base_url ?>assets/images/student/<?= $data["student_image"]?>" height="100" width="100" alt="<?= $data["student_image"]?>">
+                                <img src="<?= $base_url ?>assets/images/student/<?= $data["student_image"] != "" ? $data["student_image"]:"default.png"?>" height="100" width="100" alt="<?= $data["student_image"]?>">
                             </td>
                             <td><?= $data["student_roll"] ?></td>
                             <td><?= $data["student_first_name"]." ".$data["student_last_name"] ?></td>
                             <td><?= $data["student_email"] ?></td>
                             <td><?= $data["student_contact"] ?></td>
                             <td><?= $data["course_name"] ?></td>
-                            <td><?= $data["course_total"].($data["course_type"] == 1 ? " Semester":" Year") ?></td> 
+                          
                             <td>
                                 <a href="view.php?student_id=<?= $data["student_id"] ?>" class="btn btn-sm shadow btn-info">
                                     <i class="fa fa-eye"></i>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Professional Design</title>
+    <title>Login - Option</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <style>
@@ -13,12 +13,12 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            position: relative;
-            background: linear-gradient(to bottom right, #001f3f, #0074d9); /* Navy blue gradient */
+            background: linear-gradient(135deg, #001f3f, #0074d9, #00c1ff); /* Multi-color gradient */
             font-family: 'Arial', sans-serif;
             overflow: hidden; /* Prevent scrolling */
         }
 
+        /* Color splash background effect */
         .color-splash {
             position: absolute;
             top: 0;
@@ -26,7 +26,7 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            z-index: -1; /* Behind the form */
+            z-index: -1;
         }
 
         .color {
@@ -47,85 +47,47 @@
             }
         }
 
+        /* 3D container */
         .login-container {
-            width: 100%;
+            width: 50%;
             max-width: 400px;
             padding: 2rem;
-            background: rgba(255, 255, 255, 0.9); /* Semi-transparent white */
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.8); /* Semi-transparent */
+            border-radius: 15px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); /* Deep shadow for 3D effect */
             position: relative;
-            z-index: 1; /* In front of the splash */
-            transition: transform 0.5s ease; /* Smooth transition for animation */
+            z-index: 1;
+            transition: transform 0.6s ease;
+        }
+
+        .login-container:hover {
+            transform: perspective(1000px) rotateX(0); /* Remove tilt on hover */
         }
 
         h2 {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
             color: #333;
+            font-size: 1.8rem;
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2); /* Text shadow for 3D look */
         }
 
-        .login-btn {
-            width: 100%;
-            transition: transform 0.2s; /* Button scale effect */
-        }
-
-        .login-btn:hover {
-            transform: scale(1.05); /* Scale effect on hover */
-        }
-
-        .filled {
-            transform: scale(1.2); /* Scale effect upon successful login */
-            transition: transform 0.5s ease; /* Smooth transition */
-        }
-
-        .success-message {
-            display: none;
-            text-align: center;
-            color: green;
-            font-weight: bold;
-            margin-top: 20px;
-        }
-
-        .forgot-password {
-            text-align: center;
-            margin-top: 10px; /* Space above the link */
-        }
-
-        .change-role-btn {
-            margin-top: 10px;
-            text-align: center;
-            display: block;
-            width: 100%;
-            color: #0074d9;
-            cursor: pointer;
+        .btn {
+            width: 48%;
+            margin: 10px;
+            padding: 0.75rem;
+            font-size: 1.2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: linear-gradient(145deg, #0074d9, #005bb5); /* Button gradient */
             border: none;
-            background: none;
-            text-decoration: underline;
+            border-radius: 10px;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
-        /* Cracking animation styles */
-        @keyframes crack-animation {
-            0% {
-                transform: scale(1);
-                opacity: 1;
-            }
-            25% {
-                transform: scale(1.1);
-                opacity: 0.9;
-            }
-            50% {
-                transform: scale(0.9);
-                opacity: 0.7;
-            }
-            75% {
-                transform: scale(1.1);
-                opacity: 0.9;
-            }
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
+        .btn:hover {
+            transform: translateY(-5px) scale(1.05); /* Elevate and enlarge on hover */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5); /* Deep shadow on hover */
         }
 
         .crack-effect {
@@ -133,13 +95,28 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.5);
-            pointer-events: none; /* Prevent mouse interactions */
-            z-index: 10; /* Above the form */
-            display: none; /* Hidden by default */
-            animation: crack-animation 0.8s ease-in-out forwards; /* Apply crack animation */
+            pointer-events: none;
+            z-index: 10;
+            display: none;
         }
 
-        /* Add the move animation */
+        /* Custom input focus */
+        .form-control:focus {
+            border-color: #0074d9;
+            box-shadow: 0 0 10px rgba(0, 116, 217, 0.8); /* Stronger shadow effect */
+        }
+
+        /* Animate input field movement */
+        .input-move {
+            animation: move-animation 0.3s ease;
+        }
+
+        /* 3D button hover */
+        .login-btn {
+            transform-style: preserve-3d; /* Preserve 3D effect */
+        }
+
+        /* Keyframes for animation */
         @keyframes move-animation {
             0% {
                 transform: translateY(0);
@@ -151,45 +128,27 @@
                 transform: translateY(0);
             }
         }
-
-        .input-move {
-            animation: move-animation 0.3s ease; /* Apply the move animation */
-        }
-
-        /* Custom input focus effect */
-        .form-control:focus {
-            border-color: #0074d9; /* Change border color on focus */
-            box-shadow: 0 0 5px rgba(0, 116, 217, 0.5); /* Add shadow effect */
-        }
-
-        .role-buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .role-buttons button {
-            width: 32%; /* Space buttons evenly */
-        }
+        
     </style>
 </head>
 <body>
     <div class="color-splash"></div>
-    <div class="login-container" id="login-container">
-        <h2><i class="fas fa-user-shield"></i> Select Your Role</h2>
-        <div class="role-buttons">
-            <a href="admin.php" class="btn btn-lg btn-secondary" id="admin-login">Admin </a>
-            <a href="student.php" class="btn btn-lg btn-secondary" id="student-login">Student </a>
-        </div>
-            <div class="role-buttons">
-            <a href="faculty.php" class="btn btn-lg btn-secondary" id="faculty-login">Faculty </a>
-            <a href="faculty.php" class="btn btn-lg btn-secondary" id="faculty-login">Faculty </a>
-        </div>
-        
-         
-        <div class="crack-effect" id="crack-effect"></div> <!-- Crack effect div -->
+    <div class="login-container text-center" id="login-container">
+    <h2><i class="fas fa-user-shield"></i> Select Your Role</h2>
+    <div class="role-buttons">
+        <a href="admin.php" class="btn btn-lg btn-primary" id="admin-login">Admin</a>
+        <a href="principle.php" class="btn btn-lg btn-primary" id="principle-login">Principle</a>
     </div>
+    <div class="role-buttons">
+        <a href="faculty.php" class="btn btn-lg btn-primary" id="faculty-login">Faculty</a>
+        <a href="student.php" class="btn btn-lg btn-primary" id="student-login">Student</a>
+        <a href="department.php" class="btn btn-lg btn-primary" id="department-login">Department</a>
+    </div>
+    
+    <div class="crack-effect" id="crack-effect"></div> <!-- Crack effect div -->
+</div>
 
+    
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -200,31 +159,26 @@
             splash.className = 'color';
             const size = Math.random() * 60 + 30; // Random size for the splash
             splash.style.width = `${size}px`;
-            splash.style.height = splash.style.width; // Keep it circular
+            splash.style.height = splash.style.width;
             splash.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`; // Random color
             splash.style.left = `${x - size / 2}px`; // Center splash on mouse
             splash.style.top = `${y - size / 2}px`;
             document.querySelector('.color-splash').appendChild(splash);
 
-            // Remove splash after animation
             setTimeout(() => {
                 splash.remove();
             }, 1000);
         };
 
-        // Mouse move event to create splashes
         document.addEventListener('mousemove', (e) => {
             createSplash(e.clientX, e.clientY);
         });
 
-        // Automatically create splashes at regular intervals
         setInterval(() => {
             const x = Math.random() * window.innerWidth;
             const y = Math.random() * window.innerHeight;
             createSplash(x, y);
-        }, 500); // Adjust interval as needed
-
-      
+        }, 500); // Auto splashes
     </script>
 </body>
 </html>

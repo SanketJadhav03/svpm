@@ -1,21 +1,34 @@
-<?php
-// Start session to store user data
+<?php 
 session_start();
 $base_url = 'http://' . $_SERVER['HTTP_HOST'] . '/svpm/';
-// Simulate a simple user database (you can replace this with a real database)
-$valid_username = "student";
-$valid_password = "student";
+ 
+$servername = "localhost";  
+$username = "root";         
+$password = "";             
+$dbname = "collegemanagement";   
+$conn = new mysqli($servername, $username, $password, $dbname);
+ 
+if (isset($_POST['roll_no']) && isset($_POST['mother_name'])) {
+    $roll_no = $_POST['roll_no'];
+    $mother_name = $_POST['mother_name'];
 
-// Check if username and password are set in POST request
-if (isset($_POST['username']) && isset($_POST['password'])) {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
+    // Prepare SQL query to prevent SQL injection
+    $stmt = $conn->prepare("SELECT * FROM tbl_students WHERE student_roll = ? AND student_mother_name = ?");
+    $stmt->bind_param("ss", $roll_no, $mother_name);
+
+    // Execute the statement
+    $stmt->execute();
+    $result = $stmt->get_result();
 
     // Validate the credentials
-    if ($username === $valid_username && $password === $valid_password) {
-        // Set a session variable to indicate successful login
-        $_SESSION['role'] = 2;
-        $_SESSION['username'] = $username;
+    if ($result->num_rows > 0) {
+        // Fetch the user data
+        $user = $result->fetch_assoc();
+
+        // Set session variables upon successful login
+        $_SESSION['user_role'] = 3; // For student role
+        $_SESSION['username'] = $user['student_first_name'];
+        $_SESSION['student_id'] = $user['student_id'];
 
         // Redirect to a dashboard page or home page
         header("Location: $base_url");
@@ -23,10 +36,14 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
     } else {
         // Redirect back to the login form with an error message
         $error_message = "Invalid roll no or mother name!";
-        header("Location: student.php?error=$error_message");
+        header("Location: student.php?error=" . urlencode($error_message));
         exit();
     }
-}  
+
+    // Close the statement and connection
+    $stmt->close();
+    $conn->close();
+} 
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -212,11 +229,11 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
         <form id="login-form" method="POST" action="">
             <div class="form-group">
                 <label for="username">Roll No</label>
-                <input type="text" class="form-control" id="username" name="username" placeholder="Roll No" required>
+                <input type="text" class="form-control" id="username" name="roll_no" placeholder="Roll No" required>
             </div>
             <div class="form-group">
                 <label for="password">Mother Name</label>
-                <input type="password" class="form-control" id="password" name="password" placeholder="Mother Name" required>
+                <input type="password" class="form-control" id="password" name="mother_name" placeholder="Mother Name" required>
             </div>
             <button type="submit" class="btn btn-primary login-btn">Login</button>
 
