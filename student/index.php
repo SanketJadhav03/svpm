@@ -235,13 +235,9 @@ const fetchStudentData = async () => {
         return [];
     }
 };
-
-// Print the fetched data
+ 
 const printStudentData = async () => {
-    const data = await fetchStudentData();
-    
-
-    // Create a dynamic table with the fetched data
+    const data = await fetchStudentData(); 
     let printContents = '<table class="table">';
     printContents += '<thead><tr><th>#</th><th>Roll No</th><th>Full Name</th><th>Email</th><th>Contact Number</th><th>Course</th><th>Type</th><th>DOB</th></tr></thead>';
     printContents += '<tbody>';
@@ -259,16 +255,12 @@ const printStudentData = async () => {
                           </tr>`;
     });
 
-    printContents += '</tbody></table>';
-
-    // Open print dialog with only the fetched data
+    printContents += '</tbody></table>'; 
     const originalContents = document.body.innerHTML;
     document.body.innerHTML = printContents;
     window.print();
     document.body.innerHTML = originalContents;
-};
-
-// Event listener for the print button
+}; 
 document.getElementById('print-page').addEventListener('click', function() {
     printStudentData();
 });

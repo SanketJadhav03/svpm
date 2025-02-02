@@ -190,9 +190,7 @@ include "../component/sidebar.php";
                     addText(item.department_name, 160, y); // Department
                     y += 10;
                 });
-            }
-
-            // Save the PDF
+            } 
             doc.save('courses_report.pdf');
         });
 });
@@ -230,12 +228,9 @@ include "../component/sidebar.php";
             return [];
         }
     };
-
-    // Print the fetched data
+ 
     const printTableData = async () => {
-        const data = await fetchData();
-
-        // Create a dynamic table with the fetched data
+        const data = await fetchData(); 
         let printContents = '<table class="table">';
         printContents += '<thead><tr><th>#</th><th>Course Code</th><th>Course Name</th><th>Credits</th><th>Department</th></tr></thead>';
         printContents += '<tbody>';
