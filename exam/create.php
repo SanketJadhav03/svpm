@@ -3,28 +3,26 @@ include "../config/connection.php";
 include "../component/header.php";
 include "../component/sidebar.php";
 
-// Fetch courses from the database
-$courseQuery = "SELECT course_id, course_name FROM tbl_course";
-$courseResult = mysqli_query($conn, $courseQuery);
-
 // Check if the form is submitted
 if (isset($_POST["exam_save"])) {
-    $course_id = mysqli_real_escape_string($conn, $_POST["course_id"]);
+    // Sanitize and get form data
     $exam_title = mysqli_real_escape_string($conn, $_POST["exam_title"]);
-    $exam_date = mysqli_real_escape_string($conn, $_POST["exam_date"]);
-    $exam_start_time = mysqli_real_escape_string($conn, $_POST["exam_start_time"]);
-    $exam_end_time = mysqli_real_escape_string($conn, $_POST["exam_end_time"]);
+    $exam_description = mysqli_real_escape_string($conn, $_POST["exam_description"]);
+    $exam_start_date = mysqli_real_escape_string($conn, $_POST["exam_start_date"]);
+    $exam_end_date = mysqli_real_escape_string($conn, $_POST["exam_end_date"]);
     $exam_status = mysqli_real_escape_string($conn, $_POST["exam_status"]);
+    $exam_department_id = mysqli_real_escape_string($conn, $_POST["exam_department_id"]);
+    $exam_course_id = mysqli_real_escape_string($conn, $_POST["exam_course_id"]);
 
     // Validate required fields
-    if (empty($course_id) || empty($exam_title) || empty($exam_date) || empty($exam_start_time) || empty($exam_end_time)) {
-        $_SESSION["error"] = "All fields are required!";
+    if (empty($exam_title) || empty($exam_start_date) || empty($exam_end_date) || empty($exam_department_id) || empty($exam_course_id)) {
+        $_SESSION["error"] = "All required fields must be filled!";
     } else {
-        // Insert query
-        $insertQuery = "INSERT INTO tbl_exams 
-                        (course_id, exam_title, exam_date, exam_start_time, exam_end_time, exam_status) 
-                        VALUES ('$course_id', '$exam_title', '$exam_date', '$exam_start_time', '$exam_end_time', '$exam_status')";
+        // Insert query according to the table structure
+        $insertQuery = "INSERT INTO `tbl_exam` (`exam_title`, `exam_description`, `exam_start_date`, `exam_end_date`, `exam_status`, `exam_department_id`, `exam_course_id`) 
+                        VALUES ('$exam_title', '$exam_description', '$exam_start_date', '$exam_end_date', '$exam_status', '$exam_department_id', '$exam_course_id')";
 
+        // Execute query
         if (mysqli_query($conn, $insertQuery)) {
             $_SESSION["success"] = "Exam Created Successfully!";
             echo "<script>window.location = 'index.php';</script>";
@@ -36,7 +34,7 @@ if (isset($_POST["exam_save"])) {
 ?>
 
 <div class="content-wrapper p-2">
-    <form action="" method="post">
+    <form action="" method="post" onsubmit="validation();">
         <div class="card">
             <div class="card-header">
                 <div class="d-flex p-2 justify-content-between">
@@ -48,48 +46,61 @@ if (isset($_POST["exam_save"])) {
             </div>
             <div class="card-body">
                 <div class="row">
-                    <!-- Course Selection -->
-                    <div class="col-4">
-                        <label for="course_id">Select Course <span class="text-danger">*</span></label>
-                        <select class="form-control font-weight-bold" name="course_id" id="course_id" required>
-                            <option value="">-- Select Course --</option>
-                            <?php while ($row = mysqli_fetch_assoc($courseResult)) { ?>
-                                <option value="<?= $row['course_id']; ?>"><?= $row['course_name']; ?></option>
-                            <?php } ?>
-                        </select>
-                    </div>
-
                     <!-- Exam Title -->
                     <div class="col-4">
                         <label for="exam_title">Exam Title <span class="text-danger">*</span></label>
                         <input type="text" class="form-control font-weight-bold" name="exam_title" id="exam_title" placeholder="Exam Title" required>
                     </div>
 
-                    <!-- Exam Date -->
-                    <div class="col-4 ">
-                        <label for="exam_date">Exam Date <span class="text-danger">*</span></label>
-                        <input type="date" class="form-control font-weight-bold" name="exam_date" id="exam_date" required>
+
+                    <!-- Department Selection -->
+                    <div class="col-4">
+                        <label for="exam_department_id">Department <span class="text-danger">*</span></label>
+                        <select class="form-control font-weight-bold" name="exam_department_id" id="exam_department_id" onchange="loadCourses(this.value);" required>
+                            <option value="">Select Department</option>
+                            <?php
+                            $departmentQuery = "SELECT * FROM tbl_department";
+                            $departments = mysqli_query($conn, $departmentQuery);
+                            while ($department = mysqli_fetch_assoc($departments)) {
+                                echo "<option value='{$department['department_id']}'>{$department['department_name']}</option>";
+                            }
+                            ?>
+                        </select>
                     </div>
 
-                    <!-- Start Time -->
+                    <!-- Course Selection -->
+                    <div class="col-4">
+                        <label for="exam_course_id">Course <span class="text-danger">*</span></label>
+                        <select class="form-control font-weight-bold" name="exam_course_id" id="exam_course_id" required>
+                            <option value="">Select Course</option>
+                        </select>
+                    </div>
+                    <!-- Exam Start Date -->
                     <div class="col-4 mt-3">
-                        <label for="exam_start_time">Start Time <span class="text-danger">*</span></label>
-                        <input type="time" class="form-control font-weight-bold" name="exam_start_time" id="exam_start_time" required>
+                        <label for="exam_start_date">Exam Start Date <span class="text-danger">*</span></label>
+                        <input type="datetime-local" class="form-control font-weight-bold" name="exam_start_date" id="exam_start_date" required>
                     </div>
 
-                    <!-- End Time -->
+                    <!-- Exam End Date -->
                     <div class="col-4 mt-3">
-                        <label for="exam_end_time">End Time <span class="text-danger">*</span></label>
-                        <input type="time" class="form-control font-weight-bold" name="exam_end_time" id="exam_end_time" required>
+                        <label for="exam_end_date">Exam End Date <span class="text-danger">*</span></label>
+                        <input type="datetime-local" class="form-control font-weight-bold" name="exam_end_date" id="exam_end_date" required>
                     </div>
 
                     <!-- Exam Status -->
                     <div class="col-4 mt-3">
-                        <label for="exam_status">Exam Status</label>
-                        <select class="form-control font-weight-bold" name="exam_status" id="exam_status">
+                        <label for="exam_status">Exam Status <span class="text-danger">*</span></label>
+                        <select class="form-control font-weight-bold" name="exam_status" id="exam_status" required>
                             <option value="Scheduled">Scheduled</option>
                             <option value="Completed">Completed</option>
                         </select>
+                    </div>
+
+
+                    <!-- Exam Description -->
+                    <div class="col-12 mt-3">
+                        <label for="exam_description">Exam Description</label>
+                        <textarea class="form-control font-weight-bold" name="exam_description" id="exam_description" placeholder="Exam Description"></textarea>
                     </div>
                 </div>
             </div>
@@ -108,6 +119,55 @@ if (isset($_POST["exam_save"])) {
         </div>
     </form>
 </div>
+
+<script>
+    function validation() {
+        var exam_title = document.getElementById("exam_title");
+        var exam_start_date = document.getElementById("exam_start_date");
+        var exam_end_date = document.getElementById("exam_end_date");
+        var exam_department_id = document.getElementById("exam_department_id");
+        var exam_course_id = document.getElementById("exam_course_id");
+
+        if (exam_title.value == "") {
+            exam_title.focus();
+            event.preventDefault();
+        } else if (exam_start_date.value == "") {
+            exam_start_date.focus();
+            event.preventDefault();
+        } else if (exam_end_date.value == "") {
+            exam_end_date.focus();
+            event.preventDefault();
+        } else if (exam_department_id.value == "") {
+            exam_department_id.focus();
+            event.preventDefault();
+        } else if (exam_course_id.value == "") {
+            exam_course_id.focus();
+            event.preventDefault();
+        }
+    }
+
+    // Load courses based on selected department
+    function loadCourses(departmentId) {
+        var courseSelect = document.getElementById("exam_course_id");
+        courseSelect.innerHTML = "<option value=''>Select Course</option>"; // Reset courses
+        if (departmentId) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "get_courses.php?department_id=" + departmentId, true);
+            xhr.onload = function() {
+                if (xhr.status == 200) {
+                    var courses = JSON.parse(xhr.responseText);
+                    courses.forEach(function(course) {
+                        var option = document.createElement("option");
+                        option.value = course.course_id;
+                        option.text = course.course_name;
+                        courseSelect.appendChild(option);
+                    });
+                }
+            };
+            xhr.send();
+        }
+    }
+</script>
 
 <?php
 include "../component/footer.php";

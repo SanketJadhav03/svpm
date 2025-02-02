@@ -3,84 +3,83 @@ include "../config/connection.php";
 include "../component/header.php";
 include "../component/sidebar.php";
 
-// Fetch exams
-$examQuery = "SELECT e.*, c.course_name FROM tbl_exams e 
-              JOIN tbl_course c ON e.course_id = c.course_id 
-              ORDER BY e.exam_date DESC";
+// Fetch exams data
+$examQuery = "SELECT e.exam_id, e.exam_title, e.exam_description, e.exam_start_date, e.exam_end_date, e.exam_status, d.department_name, c.course_name 
+              FROM tbl_exam e 
+              JOIN tbl_department d ON e.exam_department_id = d.department_id
+              JOIN tbl_course c ON e.exam_course_id = c.course_id";
 $examResult = mysqli_query($conn, $examQuery);
 
-// Handle deletion
-if (isset($_GET["delete"])) {
-    $exam_id = mysqli_real_escape_string($conn, $_GET["delete"]);
-    $deleteQuery = "DELETE FROM tbl_exams WHERE exam_id = '$exam_id'";
-
-    if (mysqli_query($conn, $deleteQuery)) {
-        $_SESSION["success"] = "Exam deleted successfully!";
-        echo "<script>window.location = 'index.php';</script>";
-    } else {
-        $_SESSION["error"] = "Error deleting exam: " . mysqli_error($conn);
-    }
-}
 ?>
 
 <div class="content-wrapper p-2">
     <div class="card">
         <div class="card-header">
             <div class="d-flex p-2 justify-content-between">
-                <div class="h5 font-weight-bold">Manage Exams</div>
+                <div class="h5 font-weight-bold">Exams List</div>
                 <a href="create.php" class="btn btn-primary shadow font-weight-bold">
-                    <i class="fa fa-plus"></i>&nbsp; Add Exam
+                    <i class="fa fa-plus"></i>&nbsp; Add New Exam
                 </a>
             </div>
         </div>
-
         <div class="card-body">
+            <?php if (isset($_SESSION["success"])): ?>
+                <div class="alert alert-success">
+                    <?= $_SESSION["success"];
+                    unset($_SESSION["success"]); ?>
+                </div>
+            <?php elseif (isset($_SESSION["error"])): ?>
+                <div class="alert alert-danger">
+                    <?= $_SESSION["error"];
+                    unset($_SESSION["error"]); ?>
+                </div>
+            <?php endif; ?>
+
             <table class="table table-bordered table-striped">
-                <thead class="table-dark">
+                <thead>
                     <tr>
                         <th>#</th>
-                        <th>Course</th>
-                        <th>Exam Title</th>
-                        <th>Date</th>
-                        <th>Start Time</th>
-                        <th>End Time</th>
+                        <th>Exam Title</th>  
+                        <th>Start Date</th>
+                        <th>End Date</th>
                         <th>Status</th>
+                        <th>Department</th>
+                        <th>Course</th>
+                        <th>Que. Papers</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php if (mysqli_num_rows($examResult) > 0) {
-                        $i = 1;
-                        while ($row = mysqli_fetch_assoc($examResult)) { ?>
+                    <?php if (mysqli_num_rows($examResult) > 0): ?>
+                        <?php while ($exam = mysqli_fetch_assoc($examResult)): ?>
                             <tr>
-                                <td><?= $i++; ?></td>
-                                <td><?= $row['course_name']; ?></td>
-                                <td><?= $row['exam_title']; ?></td>
-                                <td><?= date("d-m-Y", strtotime($row['exam_date'])); ?></td>
-                                <td><?= date("h:i A", strtotime($row['exam_start_time'])); ?></td>
-                                <td><?= date("h:i A", strtotime($row['exam_end_time'])); ?></td>
+                                <td><?= $exam['exam_id']; ?></td>
+                                <td><?= $exam['exam_title']; ?></td> 
+                                <td><?= date('d/m/Y H:i', strtotime($exam['exam_start_date'])); ?></td>
+                                <td><?= date('d/m/Y H:i', strtotime($exam['exam_end_date'])); ?></td>
+                                <td><?= $exam['exam_status']; ?></td>
+                                <td><?= $exam['department_name']; ?></td>
+                                <td><?= $exam['course_name']; ?></td>
+                                <td>  <a href="question_papers.php?exam_id=<?= $exam['exam_id']; ?>" class="btn btn-info btn-sm">
+                                        <i class="fa fa-file-alt"></i>&nbsp; Que. Papers
+                                    </a></td>
                                 <td>
-                                    <span class="badge <?= ($row['exam_status'] == 'Scheduled') ? 'bg-success' : 'bg-danger'; ?>">
-                                        <?= $row['exam_status']; ?>
-                                    </span>
-                                </td>
-                                <td>
-                                    <a href="edit.php?id=<?= $row['exam_id']; ?>" class="btn btn-warning btn-sm">
-                                        <i class="fa fa-edit"></i>
+                                    <a href="edit.php?exam_id=<?= $exam['exam_id']; ?>" class="btn btn-warning btn-sm">
+                                        <i class="fa fa-edit"></i>&nbsp; Edit
                                     </a>
-                                    <a href="index.php?delete=<?= $row['exam_id']; ?>" 
-                                       onclick="return confirm('Are you sure you want to delete this exam?');"
-                                       class="btn btn-danger btn-sm">
-                                        <i class="fa fa-trash"></i>
+                                    <a href="delete.php?exam_id=<?= $exam['exam_id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this exam?');">
+                                        <i class="fa fa-trash"></i>&nbsp; Delete
                                     </a>
+                                  
                                 </td>
+
                             </tr>
-                        <?php }
-                    } else { ?>
+                        <?php endwhile; ?>
+                    <?php else: ?>
                         <tr>
-                            <td colspan="8" class="text-center text-danger">No exams found!</td>
+                            <td colspan="9" class="text-center">No exams found</td>
                         </tr>
-                    <?php } ?>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>

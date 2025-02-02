@@ -185,36 +185,11 @@
           }
           ?>
           <li class="nav-item">
-            <a href="#" class="nav-link">
-              <i class="nav-icon fa fa-clock"></i>
-              <p>
-                Setting's
-                <i class="right fas fa-angle-left"></i>
-              </p>
+            <a href="<?php echo $base_url; ?>exam/index.php" class="nav-link">
+              <i class="fas fa-clipboard-list nav-icon"></i>
+
+              <p>Manage Exams</p>
             </a>
-            <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <a href="<?php echo $base_url; ?>notice/index.php" class="nav-link">
-                <i class="fas fa-long-arrow-alt-right nav-icon"></i>
-
-                  <p>Notices</p>
-                </a>
-              </li>
-
-              <li class="nav-item">
-                <a href="<?php echo $base_url; ?>exam/index.php" class="nav-link">
-                  <i class="fas fa-long-arrow-alt-right nav-icon"></i>
-                  <p>Exams</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="pages/charts/chartjs.html" class="nav-link">
-                  <i class="fas fa-long-arrow-alt-right nav-icon"></i>
-                  <p>Shedule Test</p>
-                </a>
-              </li>
-            </ul>
-
           </li>
 
 
