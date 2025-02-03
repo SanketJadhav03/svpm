@@ -107,10 +107,13 @@ include "../component/sidebar.php";
                             <td><?= $data["course_duration"]." Semester" ?></td>
                             <td><?= $data["department_name"] ?></td>
                             <td>
+                                <a href="timetable.php?course_id=<?= $data['course_id']; ?>" class="btn btn-secondary btn-sm">
+                                        <i class="fas fa-calendar-alt"></i>
+                                    </a>
                                 <a href="edit.php?course_id=<?= $data["course_id"] ?>" class="btn btn-sm shadow btn-info">
                                     <i class="fa fa-pen"></i>
                                 </a>
-                                <a href="delete.php?course_id=<?= $data["course_id"] ?>" onclick="if(confirm('Are you sure want to delete this course?')){return true}else{return false;}" class="btn btn-sm shadow btn-danger">
+                                <a href="timetable.php?course_id=<?= $data["course_id"] ?>" onclick="if(confirm('Are you sure want to delete this course?')){return true}else{return false;}" class="btn btn-sm shadow btn-danger">
                                     <i class="fa fa-trash"></i>
                                 </a>
                             </td>

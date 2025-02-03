@@ -41,6 +41,27 @@
               </a>
             </li>
             <li class="nav-item">
+              <a href="<?php echo $base_url; ?>faculty/index.php" class="nav-link">
+                <i class="nav-icon fas fa-chalkboard"></i>
+
+                <p>Faculty</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="<?php echo $base_url; ?>student/index.php" class="nav-link">
+                <i class="nav-icon fas fa-graduation-cap"></i>
+
+                <p>Student</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="<?php echo $base_url; ?>attendence/attendencelist.php" class="nav-link">
+                <i class="nav-icon fas fa-calendar-check"></i>
+
+                <p>Attendence</p>
+              </a>
+            </li>
+            <li class="nav-item">
               <a href="<?php echo $base_url; ?>department/index.php" class="nav-link">
                 <i class="nav-icon fas fa-building"></i>
 
@@ -60,34 +81,8 @@
 
                 <p>Subject</p>
               </a>
-            </li>
-            <!-- <li class="nav-item">
-            <a href="<?php echo $base_url; ?>product/index.php" class="nav-link">
-              <i class="nav-icon fas fa-shopping-cart"></i>
-              <p>Products</p>
-            </a>
-          </li> -->
-            <li class="nav-item">
-              <a href="<?php echo $base_url; ?>student/index.php" class="nav-link">
-                <i class="nav-icon fas fa-graduation-cap"></i>
-
-                <p>Student</p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="<?php echo $base_url; ?>attendence/attendencelist.php" class="nav-link">
-                <i class="nav-icon fas fa-calendar-check"></i>
-
-                <p>Attendence</p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="<?php echo $base_url; ?>faculty/index.php" class="nav-link">
-                <i class="nav-icon fas fa-chalkboard"></i>
-
-                <p>Faculty</p>
-              </a>
-            </li>
+            </li>  
+            
             <li class="nav-item">
               <a href="<?php echo $base_url; ?>notice/index.php" class="nav-link">
                 <i class="nav-icon fas fa-sticky-note"></i>
@@ -184,6 +179,13 @@
           <?php
           }
           ?>
+          <li class="nav-item">
+            <a href="<?php echo $base_url; ?>timetable/index.php" class="nav-link">
+              <i class="fas fa-clipboard-list nav-icon"></i>
+
+              <p>Time Table</p>
+            </a>
+          </li>
           <li class="nav-item">
             <a href="<?php echo $base_url; ?>exam/index.php" class="nav-link">
               <i class="fas fa-clipboard-list nav-icon"></i>

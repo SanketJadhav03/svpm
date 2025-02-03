@@ -17,7 +17,7 @@ $examResult = mysqli_query($conn, $examQuery);
         <div class="card-header">
             <div class="d-flex p-2 justify-content-between">
                 <div class="h5 font-weight-bold">Exams List</div>
-                <a href="create.php" class="btn btn-primary shadow font-weight-bold">
+                <a href="create.php" class="btn btn-success shadow font-weight-bold">
                     <i class="fa fa-plus"></i>&nbsp; Add New Exam
                 </a>
             </div>
@@ -35,42 +35,51 @@ $examResult = mysqli_query($conn, $examQuery);
                 </div>
             <?php endif; ?>
 
-            <table class="table table-bordered table-striped">
+            <table class="table bordered table- ">
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>Exam Title</th>  
+                        <th>Exam Title</th>
                         <th>Start Date</th>
                         <th>End Date</th>
                         <th>Status</th>
                         <th>Department</th>
                         <th>Course</th>
-                        <th>Que. Papers</th>
+                        <th>Time Table</th>
+                        <!-- <th>Que. Papers</th> -->
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (mysqli_num_rows($examResult) > 0): ?>
-                        <?php while ($exam = mysqli_fetch_assoc($examResult)): ?>
+                        <?php $count = 1;  while ($exam = mysqli_fetch_assoc($examResult)): ?>
                             <tr>
-                                <td><?= $exam['exam_id']; ?></td>
-                                <td><?= $exam['exam_title']; ?></td> 
+                                <td><?= $count++; ?></td>
+                                <td><?= $exam['exam_title']; ?></td>
                                 <td><?= date('d/m/Y H:i', strtotime($exam['exam_start_date'])); ?></td>
                                 <td><?= date('d/m/Y H:i', strtotime($exam['exam_end_date'])); ?></td>
                                 <td><?= $exam['exam_status']; ?></td>
                                 <td><?= $exam['department_name']; ?></td>
                                 <td><?= $exam['course_name']; ?></td>
-                                <td>  <a href="question_papers.php?exam_id=<?= $exam['exam_id']; ?>" class="btn btn-info btn-sm">
-                                        <i class="fa fa-file-alt"></i>&nbsp; Que. Papers
-                                    </a></td>
                                 <td>
-                                    <a href="edit.php?exam_id=<?= $exam['exam_id']; ?>" class="btn btn-warning btn-sm">
-                                        <i class="fa fa-edit"></i>&nbsp; Edit
+                                    <a href="time_table_list.php?exam_id=<?= $exam['exam_id']; ?>" class="btn btn-info btn-sm">
+                                        <i class="fas fa-calendar-alt"></i>&nbsp; Time Table
+                                    </a>
+                                </td>
+                                <!-- <td>
+                                    <a href="question_papers.php?exam_id=<?= $exam['exam_id']; ?>" class="btn btn-warning btn-sm">
+                                        <i class="fas fa-file-alt"></i>&nbsp; Que. Papers
+                                    </a>
+                                </td> -->
+
+                                <td>
+                                    <a href="edit.php?exam_id=<?= $exam['exam_id']; ?>" class="btn btn-info btn-sm">
+                                        <i class="fa fa-pen"></i>
                                     </a>
                                     <a href="delete.php?exam_id=<?= $exam['exam_id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this exam?');">
-                                        <i class="fa fa-trash"></i>&nbsp; Delete
+                                        <i class="fa fa-trash"></i>
                                     </a>
-                                  
+
                                 </td>
 
                             </tr>

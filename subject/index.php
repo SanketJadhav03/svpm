@@ -18,18 +18,33 @@ include "../component/sidebar.php";
                     <div class="col-2 font-weight-bold">
                         Course
                         <select name="course_id" class="form-control font-weight-bold">
-                            <option value="">Select Course</option>
+                            <option value="">All Courses</option>
                             <?php
-                            // Fetch courses from database to populate the dropdown
-                            $courseQuery = "SELECT * FROM tbl_course";
+                            // Fetch courses grouped by department
+                            $courseQuery = "SELECT c.*, d.department_name FROM tbl_course c
+                        JOIN tbl_department d ON c.course_department_id = d.department_id
+                        ORDER BY d.department_name, c.course_name";
                             $courseResult = mysqli_query($conn, $courseQuery);
+
+                            $currentDepartment = null;
                             while ($course = mysqli_fetch_array($courseResult)) {
+                                if ($currentDepartment !== $course["department_name"]) {
+                                    if ($currentDepartment !== null) {
+                                        echo "</optgroup>";
+                                    }
+                                    $currentDepartment = $course["department_name"];
+                                    echo "<optgroup label='" . $currentDepartment . "'>";
+                                }
                                 $selected = (isset($_GET["course_id"]) && $_GET["course_id"] == $course["course_id"]) ? "selected" : "";
                                 echo "<option value='" . $course["course_id"] . "' $selected>" . $course["course_name"] . "</option>";
+                            }
+                            if ($currentDepartment !== null) {
+                                echo "</optgroup>";
                             }
                             ?>
                         </select>
                     </div>
+
                     <div class="col-1 font-weight-bold">
                         <br>
                         <button type="submit" class="shadow btn w-100 btn-info font-weight-bold"> <i class="fas fa-search"></i> &nbsp;Find</button>
@@ -181,69 +196,71 @@ include "../component/sidebar.php";
 </div>
 <script>
     document.getElementById('download-pdf').addEventListener('click', function() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    const startX = 14;
-    const startY = 30;
-    const lineSpacing = 10;
+        const {
+            jsPDF
+        } = window.jspdf;
+        const doc = new jsPDF();
+        const startX = 14;
+        const startY = 30;
+        const lineSpacing = 10;
 
-    doc.setFontSize(16);
-    doc.text('Subject Management Report', 14, 16);
+        doc.setFontSize(16);
+        doc.text('Subject Management Report', 14, 16);
 
-    doc.setFontSize(12);
-    doc.text('#', startX, startY);
-    doc.text('Subject Code', startX + 10, startY);
-    doc.text('Subject Name', startX + 50, startY);
-    doc.text('Course', startX + 100, startY);
-    doc.text('Semester', startX + 160, startY);
+        doc.setFontSize(12);
+        doc.text('#', startX, startY);
+        doc.text('Subject Code', startX + 10, startY);
+        doc.text('Subject Name', startX + 50, startY);
+        doc.text('Course', startX + 100, startY);
+        doc.text('Semester', startX + 160, startY);
 
-    fetch('download-subjects.php')
-        .then(response => response.json())
-        .then(data => {
-            let y = startY + lineSpacing;
-            data.forEach((subject, index) => {
-                doc.text((index + 1).toString(), startX, y);
-                doc.text(subject.subject_code, startX + 10, y);
-                doc.text(doc.splitTextToSize(subject.subject_name, 40), startX + 50, y);
-                doc.text(subject.course_name, startX + 100, y);
-                doc.text(subject.subject_for, startX + 160, y);
-                y += lineSpacing;
+        fetch('download-subjects.php')
+            .then(response => response.json())
+            .then(data => {
+                let y = startY + lineSpacing;
+                data.forEach((subject, index) => {
+                    doc.text((index + 1).toString(), startX, y);
+                    doc.text(subject.subject_code, startX + 10, y);
+                    doc.text(doc.splitTextToSize(subject.subject_name, 40), startX + 50, y);
+                    doc.text(subject.course_name, startX + 100, y);
+                    doc.text(subject.subject_for, startX + 160, y);
+                    y += lineSpacing;
+                });
+
+                if (data.length === 0) {
+                    doc.text('No Subjects Found', 14, y);
+                }
+
+                doc.save('subjects_report.pdf');
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                alert('Failed to generate PDF. Please try again.');
             });
+    });
 
-            if (data.length === 0) {
-                doc.text('No Subjects Found', 14, y);
-            }
+    document.getElementById('download-excel').addEventListener('click', function() {
+        fetch('download-subjects.php')
+            .then(response => response.json())
+            .then(data => {
+                const processedData = data.map((subject, index) => ({
+                    '#': index + 1,
+                    'Subject Code': subject.subject_code,
+                    'Subject Name': subject.subject_name,
+                    'Course': subject.course_name,
+                    'Semester': subject.subject_for,
+                }));
 
-            doc.save('subjects_report.pdf');
-        })
-        .catch(error => {
-            console.error('Error fetching data:', error);
-            alert('Failed to generate PDF. Please try again.');
-        });
-});
-
-document.getElementById('download-excel').addEventListener('click', function() {
-    fetch('download-subjects.php')
-        .then(response => response.json())
-        .then(data => {
-            const processedData = data.map((subject, index) => ({
-                '#': index + 1,
-                'Subject Code': subject.subject_code,
-                'Subject Name': subject.subject_name,
-                'Course': subject.course_name,
-                'Semester': subject.subject_for,
-            }));
-
-            const ws = XLSX.utils.json_to_sheet(processedData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Subjects');
-            XLSX.writeFile(wb, 'subjects_report.xlsx');
-        })
-        .catch(error => {
-            console.error('Error fetching data:', error);
-            alert('Failed to generate Excel. Please try again.');
-        });
-});
+                const ws = XLSX.utils.json_to_sheet(processedData);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'Subjects');
+                XLSX.writeFile(wb, 'subjects_report.xlsx');
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                alert('Failed to generate Excel. Please try again.');
+            });
+    });
 
 
     // Fetch data for print
