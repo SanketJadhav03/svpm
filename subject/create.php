@@ -30,15 +30,18 @@ if (isset($_POST["subject_save"])) {
             </div>
             <div class="card-body">
                 <div class="row">
-                <div class="col-4">
+                    <div class="col-4">
                         <label for="subject_course">Course Name <span class="text-danger font-weight-bold"> *</span></label>
                         <select name="subject_course" id="subject_course" class="form-control font-weight-bold" onchange="updateSubjectFor()">
                             <option value="">Select Course</option>
                             <?php
-                            // Query to get all departments
-                            $alldepartment = "SELECT * FROM tbl_department";
+                            $departmentLogin = $_SESSION['department_id'];
+                            if ($departmentLogin == 0) {
+                                $alldepartment = "SELECT * FROM tbl_department";
+                            } else {
+                                $alldepartment = "SELECT * FROM tbl_department WHERE department_id = $departmentLogin";
+                            }
                             $departmentQuery = mysqli_query($conn, $alldepartment);
-
                             // Loop through each department
                             while ($department = mysqli_fetch_array($departmentQuery)) {
                                 // Query to get courses for the current department
@@ -102,57 +105,56 @@ if (isset($_POST["subject_save"])) {
     </form>
 </div>
 <script>
-  function updateSubjectFor() {
-    var selectedOption = document.getElementById("subject_course").selectedOptions[0];
-    
-    
-    var courseTotal = selectedOption.getAttribute("data-course-total");
+    function updateSubjectFor() {
+        var selectedOption = document.getElementById("subject_course").selectedOptions[0];
 
-    var subjectForSelect = document.getElementById("subject_for");
 
-    // Clear any existing options
-    subjectForSelect.innerHTML = '<option value="">Select Semester</option>';
+        var courseTotal = selectedOption.getAttribute("data-course-total");
 
-    // Populate based on the course total (semesters/years)
-    if (courseTotal) {
-        for (var i = 1; i <= courseTotal; i++) {
-            var option = document.createElement("option");
-            option.value = i + " Semester";
-            option.text = i + " Semester";
-            subjectForSelect.appendChild(option);
+        var subjectForSelect = document.getElementById("subject_for");
+
+        // Clear any existing options
+        subjectForSelect.innerHTML = '<option value="">Select Semester</option>';
+
+        // Populate based on the course total (semesters/years)
+        if (courseTotal) {
+            for (var i = 1; i <= courseTotal; i++) {
+                var option = document.createElement("option");
+                option.value = i + " Semester";
+                option.text = i + " Semester";
+                subjectForSelect.appendChild(option);
+            }
         }
     }
-}
 
-function validation(event) {
-    var subject_code = document.getElementById("subject_code");
-    var subject_name = document.getElementById("subject_name");
-    var subject_type = document.getElementById("subject_type");
+    function validation(event) {
+        var subject_code = document.getElementById("subject_code");
+        var subject_name = document.getElementById("subject_name");
+        var subject_type = document.getElementById("subject_type");
 
-    if (subject_code.value === "") {
-        alert("Please enter the Subject Code.");
-        subject_code.focus();
-        event.preventDefault();
-        return false;
+        if (subject_code.value === "") {
+            alert("Please enter the Subject Code.");
+            subject_code.focus();
+            event.preventDefault();
+            return false;
+        }
+
+        if (subject_name.value === "") {
+            alert("Please enter the Subject Name.");
+            subject_name.focus();
+            event.preventDefault();
+            return false;
+        }
+
+        if (subject_type.value === "") {
+            alert("Please select the Subject Type.");
+            subject_type.focus();
+            event.preventDefault();
+            return false;
+        }
+
+        return true; // Proceed with form submission
     }
-
-    if (subject_name.value === "") {
-        alert("Please enter the Subject Name.");
-        subject_name.focus();
-        event.preventDefault();
-        return false;
-    }
-
-    if (subject_type.value === "") {
-        alert("Please select the Subject Type.");
-        subject_type.focus();
-        event.preventDefault();
-        return false;
-    }
-
-    return true; // Proceed with form submission
-}
- 
 </script>
 <?php
 include "../component/footer.php";

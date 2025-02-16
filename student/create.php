@@ -65,7 +65,12 @@ if (isset($_POST["student_save"])) {
                             <option value="">Select Course</option>
                             <?php
                             // Query to get all departments
-                            $alldepartment = "SELECT * FROM tbl_department";
+                            $departmentLogin = isset($_SESSION['department_id']) ?$_SESSION['department_id']:0;
+                            if ($departmentLogin == 0) {
+                                $alldepartment = "SELECT * FROM tbl_department";
+                            } else {
+                                $alldepartment = "SELECT * FROM tbl_department WHERE department_id = $departmentLogin";
+                            } 
                             $departmentQuery = mysqli_query($conn, $alldepartment);
 
                             // Loop through each department

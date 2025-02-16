@@ -67,7 +67,12 @@ if (isset($_POST["subject_update"])) {
                             <option value="">Select Course</option>
                             <?php
                             // Query to get all departments
-                            $alldepartment = "SELECT * FROM tbl_department";
+                            $departmentLogin = $_SESSION['department_id'];
+                            if ($departmentLogin == 0) {
+                                $alldepartment = "SELECT * FROM tbl_department";
+                            } else {
+                                $alldepartment = "SELECT * FROM tbl_department WHERE department_id = $departmentLogin";
+                            }
                             $departmentQuery = mysqli_query($conn, $alldepartment);
 
                             // Loop through each department

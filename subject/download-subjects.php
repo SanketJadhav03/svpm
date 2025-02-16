@@ -1,7 +1,6 @@
 <?php
 header('Content-Type: application/json');
-include "../config/connection.php";
-
+include "../config/connection.php"; 
 $query = "SELECT * FROM `tbl_subjects` INNER JOIN `tbl_course` ON tbl_course.course_id = tbl_subjects.subject_course";
 $result = mysqli_query($conn, $query);
 

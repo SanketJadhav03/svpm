@@ -75,38 +75,43 @@ if (isset($_POST["student_update"])) {
                     <div class="col-4">
                         <label for="">Course <span class="text-danger font-weight-bold"> *</span></label>
                         <select name="student_course" id="student_course" class="form-control font-weight-bold">
-    <option value="">Select Course</option>
-    <?php
-    // Query to fetch all departments
-    $alldepartment = "SELECT * FROM tbl_department";
-    $departmentQuery = mysqli_query($conn, $alldepartment);
+                            <option value="">Select Course</option>
+                            <?php
+                            // Query to fetch all departments
+                            $departmentLogin = isset($_SESSION['department_id']) ? $_SESSION['department_id'] : 0;
+                            if ($departmentLogin == 0) {
+                                $alldepartment = "SELECT * FROM tbl_department";
+                            } else {
+                                $alldepartment = "SELECT * FROM tbl_department WHERE department_id = $departmentLogin";
+                            }
+                            $departmentQuery = mysqli_query($conn, $alldepartment);
 
-    // Loop through each department
-    while ($department = mysqli_fetch_array($departmentQuery)) {
-        ?>
-        <optgroup label="<?= $department["department_name"] ?>">
-            <?php
-            // Query to fetch courses under the current department
-            $allcourse = "SELECT * FROM tbl_course WHERE course_department_id = " . $department['department_id'];
-            $courseQuery = mysqli_query($conn, $allcourse);
+                            // Loop through each department
+                            while ($department = mysqli_fetch_array($departmentQuery)) {
+                            ?>
+                                <optgroup label="<?= $department["department_name"] ?>">
+                                    <?php
+                                    // Query to fetch courses under the current department
+                                    $allcourse = "SELECT * FROM tbl_course WHERE course_department_id = " . $department['department_id'];
+                                    $courseQuery = mysqli_query($conn, $allcourse);
 
-            // Loop through each course in this department
-            while ($course = mysqli_fetch_array($courseQuery)) {
-                // Check if the course_id matches the student's selected course
-                $selected = ($course['course_id'] == $student['student_course']) ? 'selected' : '';
-                ?>
-                <option value="<?= $course['course_id'] ?>" <?= $selected ?>>
-                    <?= $course["course_name"] ?>
-                </option>
-            <?php } ?>
-        </optgroup>
-    <?php } ?>
-</select>
+                                    // Loop through each course in this department
+                                    while ($course = mysqli_fetch_array($courseQuery)) {
+                                        // Check if the course_id matches the student's selected course
+                                        $selected = ($course['course_id'] == $student['student_course']) ? 'selected' : '';
+                                    ?>
+                                        <option value="<?= $course['course_id'] ?>" <?= $selected ?>>
+                                            <?= $course["course_name"] ?>
+                                        </option>
+                                    <?php } ?>
+                                </optgroup>
+                            <?php } ?>
+                        </select>
 
                     </div>
                     <!-- <div class="col-2">
                         <label for="">Course Duration <span class="text-danger font-weight-bold"> *</span></label>
-                        <input value="<?= $student['course_total']." ".($student['course_type'] == 1 ? "Semester":"Year") ?>" readonly style="cursor: not-allowed;" type="text" class="form-control font-weight-bold" name="student_duration" id="student_duration" placeholder="Course Duration">
+                        <input value="<?= $student['course_total'] . " " . ($student['course_type'] == 1 ? "Semester" : "Year") ?>" readonly style="cursor: not-allowed;" type="text" class="form-control font-weight-bold" name="student_duration" id="student_duration" placeholder="Course Duration">
                     </div>
 
                     <div class="col-2">
@@ -223,7 +228,7 @@ if (isset($_POST["student_update"])) {
             var courseFees = selectedCourse.data('course-fees'); // Get course fees from data attribute
             var courseType = selectedCourse.data('course-type'); // Get course fees from data attribute
             // Set the values of the inputs
-            $('#student_duration').val(courseDuration ? courseDuration + (courseType == 1? " Semester":" Year") : 'N/A');
+            $('#student_duration').val(courseDuration ? courseDuration + (courseType == 1 ? " Semester" : " Year") : 'N/A');
             $('#student_fees').val(courseFees ? courseFees : 'N/A');
         });
     });

@@ -167,7 +167,13 @@
                 <p>Dashboard</p>
               </a>
             </li>
+            <li class="nav-item">
+              <a href="<?php echo $base_url; ?>student/index.php" class="nav-link">
+                <i class="nav-icon fas fa-graduation-cap"></i>
 
+                <p>Student</p>
+              </a>
+            </li>
             <li class="nav-item">
               <a href="<?php echo $base_url; ?>courses/index.php" class="nav-link">
                 <i class="nav-icon fas fa-book"></i>
