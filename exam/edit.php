@@ -92,7 +92,17 @@ $courseResult = mysqli_query($conn, $courseQuery);
                     </div>
                     <div class="col-4 ">
                         <label for="exam_department_id">Department <span class="text-danger">*</span></label>
+                        <?php
+                        if(isset($_SESSION['department_id'])){
+                       ?>
+                            <select class="form-control font-weight-bold" name="exam_department_id" id="exam_department_id" disabled>
+                       <?php
+                        }else{
+                       ?>
                         <select class="form-control font-weight-bold" name="exam_department_id" id="exam_department_id" required>
+                       <?php
+                        }
+                       ?>
                             <option value="">Select Department</option>
                             <?php while ($department = mysqli_fetch_assoc($departmentResult)): ?>
                                 <option value="<?= $department['department_id']; ?>" <?= ($exam['exam_department_id'] == $department['department_id']) ? 'selected' : ''; ?>>

@@ -188,6 +188,13 @@
                 <p>Subject</p>
               </a>
             </li>
+            <li class="nav-item">
+              <a href="<?php echo $base_url; ?>exam/index.php" class="nav-link">
+                <i class="fas fa-clipboard-list nav-icon"></i>
+
+                <p>Manage Exams</p>
+              </a>
+            </li>
           <?php
           }
           ?>

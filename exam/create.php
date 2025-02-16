@@ -56,17 +56,33 @@ if (isset($_POST["exam_save"])) {
                     <!-- Department Selection -->
                     <div class="col-4">
                         <label for="exam_department_id">Department <span class="text-danger">*</span></label>
-                        <select class="form-control font-weight-bold" name="exam_department_id" id="exam_department_id" onchange="loadCourses(this.value);" required>
+                       <?php
+                        if(isset($_SESSION['department_id'])){
+                       ?>
+                       <select class="form-control font-weight-bold" name="exam_department_id" id="exam_department_id" onchange="loadCourses(this.value);" disabled>
+                       <?php
+                       }else{?>
+                       <select class="form-control font-weight-bold" name="exam_department_id" id="exam_department_id" onchange="loadCourses(this.value);" >
+                       <?php
+                       }
+                       ?>
                             <option value="">Select Department</option>
                             <?php
                             $departmentQuery = "SELECT * FROM tbl_department";
                             $departments = mysqli_query($conn, $departmentQuery);
+
+                            // Get the department from the session
+                            $departmentLogin = isset($_SESSION['department_id']) ? $_SESSION['department_id'] : 0;
+
                             while ($department = mysqli_fetch_assoc($departments)) {
-                                echo "<option value='{$department['department_id']}'>{$department['department_name']}</option>";
+                                // Check if this department is the one logged in, and add the 'selected' attribute
+                                $selected = ($department['department_id'] == $departmentLogin) ? 'selected' : '';
+                                echo "<option value='{$department['department_id']}' {$selected}>{$department['department_name']}</option>";
                             }
                             ?>
                         </select>
                     </div>
+
 
                     <!-- Course Selection -->
                     <div class="col-4">
@@ -167,6 +183,7 @@ if (isset($_POST["exam_save"])) {
             xhr.send();
         }
     }
+    document.getElementById("exam_department_id").value ? loadCourses(document.getElementById("exam_department_id").value) : '';
 </script>
 
 <?php

@@ -3,13 +3,21 @@ include "../config/connection.php";
 include "../component/header.php";
 include "../component/sidebar.php";
 
-// Fetch exams data
-$examQuery = "SELECT e.exam_id, e.exam_title, e.exam_description, e.exam_start_date, e.exam_end_date, e.exam_status, d.department_name, c.course_name 
+
+$departmentLogin = isset($_SESSION['department_id']) ? $_SESSION['department_id'] : 0;
+if ($departmentLogin > 0) {
+    $examQuery = "SELECT e.exam_id, e.exam_title, e.exam_description, e.exam_start_date, e.exam_end_date, e.exam_status, d.department_name, c.course_name 
+              FROM tbl_exam e 
+              JOIN tbl_department d ON e.exam_department_id = d.department_id
+              JOIN tbl_course c ON e.exam_course_id = c.course_id
+              WHERE e.exam_department_id = $departmentLogin";
+} else {
+    $examQuery = "SELECT e.exam_id, e.exam_title, e.exam_description, e.exam_start_date, e.exam_end_date, e.exam_status, d.department_name, c.course_name 
               FROM tbl_exam e 
               JOIN tbl_department d ON e.exam_department_id = d.department_id
               JOIN tbl_course c ON e.exam_course_id = c.course_id";
+}
 $examResult = mysqli_query($conn, $examQuery);
-
 ?>
 
 <div class="content-wrapper p-2">
@@ -52,7 +60,8 @@ $examResult = mysqli_query($conn, $examQuery);
                 </thead>
                 <tbody>
                     <?php if (mysqli_num_rows($examResult) > 0): ?>
-                        <?php $count = 1;  while ($exam = mysqli_fetch_assoc($examResult)): ?>
+                        <?php $count = 1;
+                        while ($exam = mysqli_fetch_assoc($examResult)): ?>
                             <tr>
                                 <td><?= $count++; ?></td>
                                 <td><?= $exam['exam_title']; ?></td>
