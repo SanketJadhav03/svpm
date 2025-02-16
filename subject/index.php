@@ -195,49 +195,68 @@ include "../component/sidebar.php";
     </div>
 </div>
 <script>
-    document.getElementById('download-pdf').addEventListener('click', function() {
+    document.getElementById('download-pdf').addEventListener('click', async function() {
+        const data = await fetchSubjectData();
         const {
             jsPDF
         } = window.jspdf;
-        const doc = new jsPDF();
+
+        const doc = new jsPDF({
+            orientation: 'landscape',
+            unit: 'mm',
+            format: 'a4'
+        });
+
         const startX = 14;
         const startY = 30;
         const lineSpacing = 10;
+        const pageHeight = doc.internal.pageSize.height;
 
         doc.setFontSize(16);
         doc.text('Subject Management Report', 14, 16);
 
         doc.setFontSize(12);
-        doc.text('#', startX, startY);
-        doc.text('Subject Code', startX + 10, startY);
-        doc.text('Subject Name', startX + 50, startY);
-        doc.text('Course', startX + 100, startY);
-        doc.text('Semester', startX + 160, startY);
 
-        fetch('download-subjects.php')
-            .then(response => response.json())
-            .then(data => {
-                let y = startY + lineSpacing;
-                data.forEach((subject, index) => {
-                    doc.text((index + 1).toString(), startX, y);
-                    doc.text(subject.subject_code, startX + 10, y);
-                    doc.text(doc.splitTextToSize(subject.subject_name, 40), startX + 50, y);
-                    doc.text(subject.course_name, startX + 100, y);
-                    doc.text(subject.subject_for, startX + 160, y);
+        // Function to draw table headers
+        function drawHeaders(y) {
+            doc.text('#', startX, y);
+            doc.text('Subject Code', startX + 20, y);
+            doc.text('Subject Name', startX + 60, y);
+            doc.text('Course', startX + 160, y);
+            doc.text('Semester', startX + 210, y);
+        }
+
+        drawHeaders(startY);
+        let y = startY + lineSpacing;
+
+        if (data.length === 0) {
+            doc.text('No Subjects Found', startX, y);
+        } else {
+            data.forEach((subject, index) => {
+                if (y + lineSpacing > pageHeight - 20) {
+                    doc.addPage();
+                    y = 30; // Reset y for new page
+                    drawHeaders(y);
                     y += lineSpacing;
-                });
-
-                if (data.length === 0) {
-                    doc.text('No Subjects Found', 14, y);
                 }
 
-                doc.save('subjects_report.pdf');
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-                alert('Failed to generate PDF. Please try again.');
+                let textLines = doc.splitTextToSize(subject.subject_name, 90);
+                let textHeight = textLines.length * 5;
+
+                doc.text((index + 1).toString(), startX, y);
+                doc.text(subject.subject_code, startX + 20, y);
+                doc.text(textLines, startX + 60, y);
+                doc.text(subject.course_name, startX + 160, y);
+                doc.text(subject.subject_for, startX + 210, y);
+
+                y += Math.max(textHeight, lineSpacing);
             });
+        }
+
+        doc.save('subjects_report.pdf');
     });
+
+
 
     document.getElementById('download-excel').addEventListener('click', function() {
         fetch('download-subjects.php')

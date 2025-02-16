@@ -83,19 +83,7 @@ if ($result) {
 </style>
 
 <!-- Content Wrapper. Contains page content -->
-<div class="content-wrapper">
-  <!-- Content Header (Page header) -->
-  <div class="content-header">
-    <div class="container-fluid">
-      <div class="row mb-2">
-        <div class="col-12 text-center">
-          <h1 class="h1">Admin Dashboard </h1>
-        </div><!-- /.col -->
-      </div><!-- /.row -->
-    </div><!-- /.container-fluid -->
-  </div>
-  <!-- /.content-header -->
-
+<div class="content-wrapper pt-2">
   <!-- Main content -->
   <section class="content">
     <div class="container-fluid">
@@ -129,10 +117,10 @@ if ($result) {
               ?>
               <span class="info-box-text">Courses</span>
               <span class="info-box-number">
-              <?= $dataCourse["course_count"] ?>
-              </span> 
+                <?= $dataCourse["course_count"] ?>
+              </span>
             </div>
-            
+
             <!-- /.info-box-content -->
           </div>
           <!-- /.info-box -->
@@ -143,13 +131,13 @@ if ($result) {
             <a href="<?= $base_url . "faculty/" ?>" class="info-box-icon bg-danger elevation-1"> <i class=" fas fa-chalkboard"></i></a>
 
             <div class="info-box-content">
-            <?php
+              <?php
               $dataFaculty = "SELECT COUNT(*) AS faculty_count FROM tbl_faculty;";
               $dataFaculty = mysqli_fetch_array(mysqli_query($conn, $dataFaculty));
               ?>
               <span class="info-box-text">Faculty</span>
               <span class="info-box-number">
-              <?= $dataFaculty["faculty_count"] ?>
+                <?= $dataFaculty["faculty_count"] ?>
               </span>
             </div>
             <!-- /.info-box-content -->
@@ -193,8 +181,7 @@ if ($result) {
 
           <!-- /.card -->
           <div class="row">
-            <div class="col-md-12">
-              <!-- DIRECT CHAT -->
+            <div class="col-md-12"> 
               <div class="card ">
                 <div class="card-header">
                   <h3 class="card-title">Notices</h3>
@@ -230,15 +217,74 @@ if ($result) {
 
                 <!-- /.card-body -->
 
-              </div>
-
-
-              <!--/.direct-chat -->
+              </div> 
             </div>
-            <!-- /.col -->
+            <div class="col-md-12">
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    Exam Shedule Information
+                  </h3>
+                  <div class="card-tools">
 
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
 
-            <!-- /.col -->
+                    <button type="button" class="btn btn-tool" data-card-widget="remove">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <table class="table bordered table- ">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Exam Title</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Status</th>
+                        <th>Department</th>
+                        <th>Course</th>
+                        <th>Time Table</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <?php
+                      $examQuery = "SELECT e.exam_id, e.exam_title, e.exam_description, e.exam_start_date, e.exam_end_date, e.exam_status, d.department_name, c.course_name 
+            FROM tbl_exam e 
+            JOIN tbl_department d ON e.exam_department_id = d.department_id
+            JOIN tbl_course c ON e.exam_course_id = c.course_id";
+                      $examResult = mysqli_query($conn, $examQuery);
+                      if (mysqli_num_rows($examResult) > 0): ?>
+                        <?php $count = 1;
+                        while ($exam = mysqli_fetch_assoc($examResult)): ?>
+                          <tr>
+                            <td><?= $count++; ?></td>
+                            <td><?= $exam['exam_title']; ?></td>
+                            <td><?= date('d/m/Y H:i', strtotime($exam['exam_start_date'])); ?></td>
+                            <td><?= date('d/m/Y H:i', strtotime($exam['exam_end_date'])); ?></td>
+                            <td><?= $exam['exam_status']; ?></td>
+                            <td><?= $exam['department_name']; ?></td>
+                            <td><?= $exam['course_name']; ?></td>
+                            <td>
+                              <a href="time_table_list.php?exam_id=<?= $exam['exam_id']; ?>" class="btn btn-info btn-sm">
+                                <i class="fas fa-calendar-alt"></i>&nbsp; Time Table
+                              </a>
+                            </td>
+                          </tr>
+                        <?php endwhile; ?>
+                      <?php else: ?>
+                        <tr>
+                          <td colspan="9" class="text-center">No exams found</td>
+                        </tr>
+                      <?php endif; ?>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
           </div>
           <!-- /.row -->
 

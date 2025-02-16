@@ -61,6 +61,7 @@ include "../component/sidebar.php";
                         <th>Credits</th>
                         <th>Course Duration</th>
                         <th>Department</th>
+                        <th>Time Table</th>
                         <th>Action</th>
                     </tr>
                     <?php
@@ -107,9 +108,12 @@ include "../component/sidebar.php";
                             <td><?= $data["course_duration"]." Semester" ?></td>
                             <td><?= $data["department_name"] ?></td>
                             <td>
-                                <a href="timetable.php?course_id=<?= $data['course_id']; ?>" class="btn btn-secondary btn-sm">
-                                        <i class="fas fa-calendar-alt"></i>
+                            <a href="timetable.php?course_id=<?= $data['course_id']; ?>" class="btn btn-info btn-sm">
+                                        <i class="fas fa-calendar-alt me-2"></i> Time Table
                                     </a>
+                            </td>
+                            <td>
+                               
                                 <a href="edit.php?course_id=<?= $data["course_id"] ?>" class="btn btn-sm shadow btn-info">
                                     <i class="fa fa-pen"></i>
                                 </a>

@@ -81,8 +81,8 @@
 
                 <p>Subject</p>
               </a>
-            </li>  
-            
+            </li>
+
             <li class="nav-item">
               <a href="<?php echo $base_url; ?>notice/index.php" class="nav-link">
                 <i class="nav-icon fas fa-sticky-note"></i>
@@ -90,7 +90,13 @@
                 <p>Notices</p>
               </a>
             </li>
+            <li class="nav-item">
+              <a href="<?php echo $base_url; ?>exam/index.php" class="nav-link">
+                <i class="fas fa-clipboard-list nav-icon"></i>
 
+                <p>Manage Exams</p>
+              </a>
+            </li>
 
             <!-- <li class="nav-item">
             <a href="#" class="nav-link">
@@ -179,20 +185,14 @@
           <?php
           }
           ?>
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <a href="<?php echo $base_url; ?>timetable/index.php" class="nav-link">
               <i class="fas fa-clipboard-list nav-icon"></i>
 
               <p>Time Table</p>
             </a>
-          </li>
-          <li class="nav-item">
-            <a href="<?php echo $base_url; ?>exam/index.php" class="nav-link">
-              <i class="fas fa-clipboard-list nav-icon"></i>
+          </li> -->
 
-              <p>Manage Exams</p>
-            </a>
-          </li>
 
 
 
