@@ -93,7 +93,63 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_timetable'])) {
 }
 
 ?>
+<style>
+    .notices-marquee {
+        height: 330px;
+        overflow: hidden;
+        position: relative;
+        background-color: #f1f1f1;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 10px;
+    }
 
+    .notice-item {
+        margin-bottom: 20px;
+        display: block;
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+        background-color: #ffffff;
+        border-radius: 4px;
+        transition: transform 0.2s ease;
+        font-size: 14px;
+        /* Initial font size */
+    }
+
+    .notice-item:hover {
+        transform: scale(1.1);
+        /* Slightly enlarge on hover */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        /* Darker shadow on hover */
+        font-size: 16px;
+        /* Increase font size on hover */
+    }
+
+    /* New styles for the sliding animation */
+    @keyframes scroll-vertical {
+        0% {
+            transform: translateY(100%);
+        }
+
+        100% {
+            transform: translateY(-100%);
+        }
+    }
+
+    .notices-content {
+        display: flex;
+        flex-direction: column;
+        animation: scroll-vertical 15s linear infinite;
+        animation-play-state: running;
+        /* Default state is running */
+    }
+
+    .notices-content:hover {
+        animation-play-state: paused;
+        padding: 10px;
+        /* Pause animation on hover */
+    }
+</style>
 <div class="content-wrapper">
     <div class="p-2 container-fluid">
         <div class="card">
@@ -123,11 +179,55 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_timetable'])) {
 
             </div>
         </div>
-        <?php 
-        $examQuery = "SELECT * FROM tbl_exam ORDER BY exam_start_date ASC";
+        <?php
+        $examQuery = "SELECT * FROM tbl_exam   WHERE exam_course_id = $course_id ORDER BY exam_start_date ASC";
         $examResult = mysqli_query($conn, $examQuery);
-        ?>
+        $notices = [];
+        $query = "SELECT * FROM `tbl_notices` WHERE `notice_status` = 1 ORDER BY `notice_id` DESC LIMIT 9"; // Only fetch active notices
+        $result = mysqli_query($conn, $query);
 
+        if ($result) {
+            while ($row = mysqli_fetch_assoc($result)) {
+                $notices[] = $row; // Store each notice in the array
+            }
+        }
+        ?>
+        <div class="card ">
+            <div class="card-header">
+                <h3 class="card-title">Notices</h3>
+                <div class="card-tools">
+
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-minus"></i>
+                    </button>
+
+                    <button type="button" class="btn btn-tool" data-card-widget="remove">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="notices-marquee">
+                    <div class="notices-content">
+                        <div class="row">
+                            <?php foreach ($notices as $notice): ?>
+                                <div class="col-md-4">
+                                    <span class="notice-item">
+                                        <i class="fas fa-thumbtack"></i>&nbsp;
+                                        <b><?= htmlspecialchars($notice['notice_title']) ?></b>
+                                        <div class="notice-date"> - <?= date('F j, Y g:i A', strtotime($notice['notice_date'])) ?></div>
+                                        <div> - <?= htmlspecialchars($notice['notice_description']) ?></div>
+                                    </span>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- /.card-body -->
+
+        </div>
         <div class="card">
             <div class="card-header">
                 <h3 class="font-weight-bold">Exam Time Table</h3>
@@ -141,7 +241,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_timetable'])) {
                             <p><strong>Duration:</strong> <?php echo date("d-m-Y", strtotime($exam['exam_start_date'])); ?> to <?php echo date("d-m-Y", strtotime($exam['exam_end_date'])); ?></p>
 
                             <?php
-                            $scheduleQuery = "SELECT * FROM tbl_exam_schedule WHERE schedule_exam = '" . $exam['exam_id'] . "'    ORDER BY schedule_date ASC, schedule_start_time ASC";
+                            $scheduleQuery = "SELECT * FROM tbl_exam_schedule INNER JOIN tbl_course ON tbl_exam_schedule.schedule_course = tbl_course.course_id INNER JOIN tbl_subjects ON tbl_exam_schedule.schedule_subject = tbl_subjects.subject_id WHERE schedule_exam = '" . $exam['exam_id'] . "'    ORDER BY schedule_date ASC, schedule_start_time ASC";
                             $scheduleResult = mysqli_query($conn, $scheduleQuery);
                             ?>
 
@@ -159,8 +259,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_timetable'])) {
                                     <tbody>
                                         <?php while ($schedule = mysqli_fetch_assoc($scheduleResult)): ?>
                                             <tr>
-                                                <td><?php echo htmlspecialchars($schedule['schedule_course']); ?></td>
-                                                <td><?php echo htmlspecialchars($schedule['schedule_subject']); ?></td>
+                                                <td><?php echo htmlspecialchars($schedule['course_name']); ?></td>
+                                                <td><?php echo htmlspecialchars($schedule['subject_name']); ?></td>
                                                 <td><?php echo date("d-m-Y", strtotime($schedule['schedule_date'])); ?></td>
                                                 <td><?php echo date("h:i A", strtotime($schedule['schedule_start_time'])); ?></td>
                                                 <td><?php echo date("h:i A", strtotime($schedule['schedule_end_time'])); ?></td>
@@ -243,5 +343,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_timetable'])) {
 
     </div>
 </div>
-
+<script>
+    window.onload = function() {
+        const marquee = document.querySelector('.notices-content');
+        const speed = 30000; // Speed of the animation (higher value = slower)
+        marquee.style.animationDuration = `${speed / 1000}s`;
+    };
+</script>
 <?php include "../component/footer.php"; ?>

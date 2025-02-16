@@ -177,11 +177,8 @@ if ($result) {
       <div class="row">
         <!-- Left col -->
         <div class="col-md-12">
-          <!-- MAP & BOX PANE -->
-
-          <!-- /.card -->
           <div class="row">
-            <div class="col-md-12"> 
+            <div class="col-md-12">
               <div class="card ">
                 <div class="card-header">
                   <h3 class="card-title">Notices</h3>
@@ -217,7 +214,7 @@ if ($result) {
 
                 <!-- /.card-body -->
 
-              </div> 
+              </div>
             </div>
             <div class="col-md-12">
               <div class="card">
