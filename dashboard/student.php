@@ -184,10 +184,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_timetable'])) {
         $examResult = mysqli_query($conn, $examQuery);
         $notices = [];
         $query = "SELECT * FROM `tbl_notices` WHERE `notice_status` = 1 ORDER BY `notice_id` DESC LIMIT 9"; // Only fetch active notices
-        $result = mysqli_query($conn, $query);
+        $noticesresult = mysqli_query($conn, $query);
 
-        if ($result) {
-            while ($row = mysqli_fetch_assoc($result)) {
+        if ($noticesresult) {
+            while ($row = mysqli_fetch_assoc($noticesresult)) {
                 $notices[] = $row; // Store each notice in the array
             }
         }
