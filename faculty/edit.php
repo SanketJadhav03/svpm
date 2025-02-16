@@ -106,7 +106,7 @@ if (isset($_POST["faculty_update"])) {
                     <!-- Faculty Department -->
                     <div class="col-6 mt-3">
                         <label for="faculty_department_id">Department <span class="text-danger">*</span></label>
-                        <select name="faculty_department_id" class="form-control font-weight-bold" required>
+                        <select <?= isset($_SESSION['department_id'])?"disabled":"" ?> name="faculty_department_id" class="form-control font-weight-bold" required>
                             <option value="">Select Department</option>
                             <?php while ($department = mysqli_fetch_assoc($departmentsResult)) { ?>
                                 <option value="<?= $department['department_id'] ?>" <?= ($faculty['faculty_department_id'] == $department['department_id']) ? 'selected' : '' ?>>

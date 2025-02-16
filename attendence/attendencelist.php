@@ -54,10 +54,19 @@ $totalStudents = $totalStudentData['total_students'];
                                         <option value="">All Courses</option>
                                         <?php
                                         // Fetch courses grouped by department
-                                        $deptQuery = "SELECT d.department_id, d.department_name, c.course_id, c.course_name 
+                                        $departmentLogin = isset($_SESSION['department_id']) ? $_SESSION['department_id'] : 0;
+                                        if (isset($_SESSION['department_id'])) {
+                                            $deptQuery = "SELECT * 
+                                              FROM tbl_department d
+                                              LEFT JOIN tbl_course c ON d.department_id = c.course_department_id
+                                              WHERE d.department_id = $departmentLogin
+                                              ORDER BY d.department_name, c.course_name";
+                                        } else {
+                                            $deptQuery = "SELECT * 
                                               FROM tbl_department d
                                               LEFT JOIN tbl_course c ON d.department_id = c.course_department_id
                                               ORDER BY d.department_name, c.course_name";
+                                        }
                                         $deptResult = mysqli_query($conn, $deptQuery);
                                         $currentDept = null;
 
@@ -103,14 +112,25 @@ $totalStudents = $totalStudentData['total_students'];
                         $courseId = isset($_GET['course_id']) ? $_GET['course_id'] : '';
 
                         // Base Query
+                        $departmentLogin = isset($_SESSION['department_id']) ? intval($_SESSION['department_id']) : null;
+                        $courseId = isset($_GET['course_id']) ? intval($_GET['course_id']) : null;
+                        $startDate = isset($_GET['start_date']) ? $_GET['start_date'] : '';
+                        $endDate = isset($_GET['end_date']) ? $_GET['end_date'] : '';
+
+                        // Base Query
                         $query = "SELECT a.*, s.student_first_name, c.course_name, c.course_id 
-                          FROM tbl_attendance AS a
-                          RIGHT JOIN tbl_students AS s ON a.attendance_student_id = s.student_id
-                          INNER JOIN tbl_course AS c ON s.student_course = c.course_id";
+                                  FROM tbl_attendance AS a
+                                  RIGHT JOIN tbl_students AS s ON a.attendance_student_id = s.student_id
+                                  INNER JOIN tbl_course AS c ON s.student_course = c.course_id";
 
                         $conditions = [];
 
-                        // Apply filters
+                        // Apply department filter if logged in as department user
+                        if ($departmentLogin) {
+                            $conditions[] = "c.course_department_id = $departmentLogin";
+                        }
+
+                        // Apply date filters
                         if (!empty($startDate) && !empty($endDate)) {
                             $conditions[] = "a.attendance_date BETWEEN '$startDate' AND '$endDate'";
                         } elseif (!empty($startDate)) {
@@ -119,11 +139,12 @@ $totalStudents = $totalStudentData['total_students'];
                             $conditions[] = "a.attendance_date <= '$endDate'";
                         }
 
+                        // Apply course filter
                         if (!empty($courseId)) {
-                            $conditions[] = "s.student_course = '$courseId'";
+                            $conditions[] = "s.student_course = $courseId";
                         }
 
-                        // Append conditions if any
+                        // Append conditions to the query
                         if (!empty($conditions)) {
                             $query .= " WHERE " . implode(" AND ", $conditions);
                         }
@@ -131,7 +152,7 @@ $totalStudents = $totalStudentData['total_students'];
                         $query .= " ORDER BY c.course_name, a.attendance_date DESC";
 
                         $result = mysqli_query($conn, $query);
-                        $totalRecords = mysqli_num_rows($result);
+                        $totalRecords = mysqli_num_rows($result); 
                         ?>
                         <div class="container font-weight-bold text-center py-3 d-flex justify-content-between">
                             <div class="text-success">

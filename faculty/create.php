@@ -3,10 +3,6 @@ include "../config/connection.php";
 include "../component/header.php";
 include "../component/sidebar.php";
 
-// Fetch all departments for the dropdown
-$departmentQuery = "SELECT * FROM `tbl_department`";
-$departmentsResult = mysqli_query($conn, $departmentQuery);
-
 // Check if the form is submitted
 if (isset($_POST["faculty_create"])) {
     // Sanitize and get form data
@@ -15,7 +11,7 @@ if (isset($_POST["faculty_create"])) {
     $faculty_password = mysqli_real_escape_string($conn, $_POST["faculty_password"]);
     $faculty_phone = mysqli_real_escape_string($conn, $_POST["faculty_phone"]);
     $faculty_designation = mysqli_real_escape_string($conn, $_POST["faculty_designation"]);
-    $faculty_department_id = mysqli_real_escape_string($conn, $_POST["faculty_department_id"]);
+    $faculty_department_id =  isset($_SESSION['department_id']) ?$_SESSION['department_id']: mysqli_real_escape_string($conn, $_POST["faculty_department_id"]);
     $faculty_specialization = mysqli_real_escape_string($conn, $_POST["faculty_specialization"]);
     $faculty_date_of_joining = mysqli_real_escape_string($conn, $_POST["faculty_date_of_joining"]);
 
@@ -107,10 +103,19 @@ if (isset($_POST["faculty_create"])) {
                     <!-- Faculty Department -->
                     <div class="col-6 mt-3">
                         <label for="faculty_department_id">Department <span class="text-danger">*</span></label>
-                        <select name="faculty_department_id" class="form-control font-weight-bold" required>
+                        <select <?= isset($_SESSION['department_id'])?"disabled":"" ?> name="faculty_department_id" class="form-control font-weight-bold" required>
                             <option value="">Select Department</option>
-                            <?php while ($department = mysqli_fetch_assoc($departmentsResult)) { ?>
-                                <option value="<?= $department['department_id'] ?>"><?= $department['department_name'] ?></option>
+                            <?php
+                            $departmentLogin = isset($_SESSION['department_id']) ? $_SESSION['department_id'] : 0;
+                            if (isset($_SESSION['department_id'])) {
+                                $departmentQuery = "SELECT * FROM `tbl_department` WHERE department_id = $departmentLogin";
+                            } else {
+                                $departmentQuery = "SELECT * FROM `tbl_department`";
+                            }
+                            $departmentsResult = mysqli_query($conn, $departmentQuery);
+
+                            while ($department = mysqli_fetch_assoc($departmentsResult)) { ?>
+                                <option <?= $departmentLogin > 0 ? "selected":"" ?> value="<?= $department['department_id'] ?>" ><?= $department['department_name'] ?></option>
                             <?php } ?>
                         </select>
                     </div>

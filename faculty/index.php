@@ -27,7 +27,7 @@ include "../component/sidebar.php";
                 </div>
             </form>
         </div>
-        
+
         <div class="card-body">
             <?php
             if (isset($_SESSION["success"])) {
@@ -59,8 +59,14 @@ include "../component/sidebar.php";
                     $limit = 10;
                     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
                     $offset = ($page - 1) * $limit;
-                    $countQuery = "SELECT COUNT(*) as total FROM `tbl_faculty` INNER JOIN tbl_department  ON tbl_department.department_id = tbl_faculty.faculty_department_id";
-                    $selectQuery = "SELECT * FROM `tbl_faculty` INNER JOIN tbl_department  ON tbl_department.department_id = tbl_faculty.faculty_department_id LIMIT $limit OFFSET $offset";
+                    $departmentLogin = isset($_SESSION['department_id']) ? $_SESSION['department_id'] : 0;
+                    if ($departmentLogin > 0) {
+                        $countQuery = "SELECT COUNT(*) as total FROM `tbl_faculty` INNER JOIN tbl_department  ON tbl_department.department_id = tbl_faculty.faculty_department_id WHERE `faculty_department_id` = $departmentLogin";
+                        $selectQuery = "SELECT * FROM `tbl_faculty` INNER JOIN tbl_department  ON tbl_department.department_id = tbl_faculty.faculty_department_id WHERE `faculty_department_id` = $departmentLogin LIMIT $limit OFFSET $offset";
+                    } else {
+                        $countQuery = "SELECT COUNT(*) as total FROM `tbl_faculty` INNER JOIN tbl_department  ON tbl_department.department_id = tbl_faculty.faculty_department_id";
+                        $selectQuery = "SELECT * FROM `tbl_faculty` INNER JOIN tbl_department  ON tbl_department.department_id = tbl_faculty.faculty_department_id LIMIT $limit OFFSET $offset";
+                    }
                     if (isset($_GET["faculty_name"])) {
                         $faculty_name = $_GET["faculty_name"];
                         $faculty_name = mysqli_real_escape_string($conn, $faculty_name);

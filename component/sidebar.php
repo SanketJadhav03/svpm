@@ -168,10 +168,24 @@
               </a>
             </li>
             <li class="nav-item">
+              <a href="<?php echo $base_url; ?>faculty/index.php" class="nav-link">
+                <i class="nav-icon fas fa-chalkboard"></i>
+
+                <p>Faculty</p>
+              </a>
+            </li>
+            <li class="nav-item">
               <a href="<?php echo $base_url; ?>student/index.php" class="nav-link">
                 <i class="nav-icon fas fa-graduation-cap"></i>
 
                 <p>Student</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="<?php echo $base_url; ?>attendence/attendencelist.php" class="nav-link">
+                <i class="nav-icon fas fa-calendar-check"></i>
+
+                <p>Attendence</p>
               </a>
             </li>
             <li class="nav-item">
@@ -186,6 +200,13 @@
                 <i class="nav-icon fas fa-file-alt"></i>
 
                 <p>Subject</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="<?php echo $base_url; ?>notice/index.php" class="nav-link">
+                <i class="nav-icon fas fa-sticky-note"></i>
+
+                <p>Notices</p>
               </a>
             </li>
             <li class="nav-item">
