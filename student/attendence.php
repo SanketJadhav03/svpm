@@ -3,13 +3,14 @@ include "../config/connection.php";
 include "../component/header.php";
 include "../component/sidebar.php";
 
-// Fetch today's attendance record
-$attendanceQuery = "SELECT *
-                     FROM tbl_attendance 
-                     WHERE attendance_student_id = ? AND attendance_date = CURDATE()"; 
+$attendanceQuery = "SELECT * 
+                    FROM tbl_attendance 
+                    WHERE attendance_student_id = ? 
+                    AND DATE(attendance_date) = CURDATE()";
+
 
 $stmt = $conn->prepare($attendanceQuery);
-$attendance_student_id = $_SESSION["student_id"]; 
+$attendance_student_id = $_SESSION["student_id"];
 $stmt->bind_param("i", $attendance_student_id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -26,10 +27,12 @@ $attendanceRecord = $result->fetch_assoc();
                 <?php if ($attendanceRecord): ?>
                     <div class="text-center mt-4">
                         <h3>Today's Attendance Record:</h3>
-                        <!-- <img src="<?= $base_url ?>assets/images/studentattendence/<?= $attendanceRecord["attendence_photo"] != "" ? $attendanceRecord["attendence_photo"]:"default.png"?>" height="100" width="100" alt="<?= $attendanceRecord["attendence_photo"]?>"> -->
+
+                        <img src="<?= $base_url . "assets/images/studentattendence/" . $attendanceRecord['attendance_photo'] ?>" height="350" width="450">
 
                         <p>Coordinates: <?= $attendanceRecord['attendance_latitude'] ?>, <?= $attendanceRecord['attendance_longitude'] ?></p>
-                        <p>Date: <?= $attendanceRecord['attendance_date'] ?></p>
+                        <p>Date & Time: <?= date("d/m/Y h:i:s A", strtotime($attendanceRecord['attendance_date'])) ?></p>
+
                     </div>
                 <?php else: ?>
                     <div class="text-center mb-4">
@@ -69,18 +72,18 @@ $attendanceRecord = $result->fetch_assoc();
     var longitude = "";
     var placeName = "";
 
-    document.getElementById('todayDate').innerText = "Today's Date: " + new Date().toLocaleDateString();
+    document.getElementById('todayDate').innerText = "Today's Date: " + new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString();
 
     function startCamera() {
         navigator.mediaDevices.getUserMedia({
                 video: true
             })
             .then(function(localStream) {
-                stream = localStream; 
+                stream = localStream;
                 video.srcObject = stream;
-                video.style.display = 'block'; 
-                document.getElementById('captureButton').style.display = 'inline'; 
-                document.getElementById('startCameraButton').style.display = 'none'; 
+                video.style.display = 'block';
+                document.getElementById('captureButton').style.display = 'inline';
+                document.getElementById('startCameraButton').style.display = 'none';
             })
             .catch(function(error) {
                 alert('Unable to access the camera: ' + error.message);
@@ -91,9 +94,9 @@ $attendanceRecord = $result->fetch_assoc();
         var photoData = document.getElementById('photoData');
         canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
         var dataURL = canvas.toDataURL('image/png');
-        photoData.value = dataURL; 
+        photoData.value = dataURL;
         capturedImage.src = dataURL;
-        capturedImage.style.display = 'block'; 
+        capturedImage.style.display = 'block';
         video.style.display = 'none';
         document.getElementById('captureButton').style.display = 'none';
         document.getElementById('submitAttendance').style.display = 'inline-block';
@@ -102,9 +105,9 @@ $attendanceRecord = $result->fetch_assoc();
 
     function stopCamera() {
         if (stream) {
-            let tracks = stream.getTracks(); 
-            tracks.forEach(track => track.stop()); 
-            video.srcObject = null; 
+            let tracks = stream.getTracks();
+            tracks.forEach(track => track.stop());
+            video.srcObject = null;
         }
     }
 
@@ -113,7 +116,7 @@ $attendanceRecord = $result->fetch_assoc();
 
         if (!photoData) {
             alert("Please capture your photo before submitting.");
-            return; 
+            return;
         }
 
         var canvas = document.getElementById('canvas');
@@ -122,13 +125,13 @@ $attendanceRecord = $result->fetch_assoc();
             formData.append("photoData", blob);
             formData.append("latitude", latitude);
             formData.append("longitude", longitude);
-            
+
             var xhr = new XMLHttpRequest();
             xhr.open("POST", "submit_attendance.php", true);
             xhr.onload = function() {
                 if (xhr.status === 200) {
                     alert("Attendance submitted successfully!");
-                    location.reload(); 
+                    location.reload();
                 } else {
                     alert("Error submitting attendance: " + xhr.statusText);
                 }
