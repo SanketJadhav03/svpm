@@ -3,7 +3,10 @@ header('Content-Type: application/json');
 include "../config/connection.php";
 
 // Query to select all students
-$query = "SELECT * FROM `tbl_students`";
+$query = "SELECT tbl_students.*, tbl_course.course_name 
+          FROM tbl_students 
+          INNER JOIN tbl_course ON tbl_course.course_id = tbl_students.student_course";
+
 $result = mysqli_query($conn, $query);
 
 // Initialize an array to hold student data
@@ -22,7 +25,9 @@ while ($data = mysqli_fetch_assoc($result)) {
         'student_city' => $data["student_city"],
         'student_mother_name' => $data["student_mother_name"],
         'student_father_name' => $data["student_father_name"],
-        'student_image' => $data["student_image"]
+        'student_image' => $data["student_image"],
+        'course_name' => $data["course_name"],
+        'student_type' => $data["student_type"],
     ];
 }
 

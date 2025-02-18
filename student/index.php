@@ -20,14 +20,7 @@ include "../component/sidebar.php";
                         <br>
                         <button type="submit" class="shadow btn w-100 btn-info font-weight-bold"> <i class="fas fa-search"></i> &nbsp;Find</button>
                     </div>
-                    <div class="col-1 font-weight-bold">
-                        <br>
-                        <button type="button" class="shadow btn w-100 font-weight-bold btn-primary" id="download-excel"><i class="fas fa-file-excel"></i> &nbsp; Excel</button>
-                    </div>
-                    <div class="col-1 font-weight-bold">
-                        <br>
-                        <button type="button" class="shadow btn w-100 font-weight-bold btn-danger" id="download-pdf"><i class="fas fa-file-pdf"></i> &nbsp; PDF</button>
-                    </div>
+                    
                     <div class="col-1 font-weight-bold">
                         <br>
                         <button type="button" class="shadow btn w-100 font-weight-bold btn-secondary" id="print-page"><i class="fa fa-print"></i> &nbsp;Print</button>
@@ -150,88 +143,8 @@ include "../component/sidebar.php";
     </div>
 
 </div>
-<script>
-    document.getElementById('download-pdf').addEventListener('click', function() {
-        const {
-            jsPDF
-        } = window.jspdf;
-        const doc = new jsPDF();
-
-        // Title
-        doc.setFontSize(16);
-        doc.text('Student Management Report', 14, 16);
-
-        // Table headers
-        doc.setFontSize(12);
-        const startX = 14;
-        const startY = 30;
-        const lineSpacing = 10;
-
-        // Set column headers
-        doc.text('#', startX, startY);
-        doc.text('Roll No', startX + 10, startY);
-        doc.text('Full Name', startX + 50, startY);
-        doc.text('Email', startX + 100, startY);
-        doc.text('Contact Number', startX + 130, startY);
-        doc.text('Course', startX + 160, startY);
-        doc.text('Type', startX + 190, startY);
-        doc.text('DOB', startX + 220, startY);
-
-        // Fetch data and populate PDF
-        fetch('download-pdf.php')
-            .then(response => response.json())
-            .then(data => {
-                let y = startY + lineSpacing; // Move below headers
-
-                data.forEach((student, index) => {
-                    doc.text((index + 1).toString(), startX, y); // Index column
-                    doc.text(student.student_roll, startX + 10, y); // Roll No
-                    doc.text(student.student_first_name + ' ' + student.student_last_name, startX + 50, y); // Full Name
-                    doc.text(student.student_email, startX + 100, y); // Email
-                    doc.text(student.student_contact, startX + 130, y); // Contact Number
-                    doc.text(student.course_name, startX + 160, y); // Course
-                    doc.text(student.student_type, startX + 190, y); // Type
-                    doc.text(new Date(student.student_dob).toLocaleDateString(), startX + 220, y); // Date of Birth
-                    y += lineSpacing;
-                });
-
-                if (data.length === 0) {
-                    doc.text('No Students Found', 14, y);
-                }
-
-                // Save the PDF
-                doc.save('students_report.pdf');
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-            });
-    });
-
-    document.getElementById('download-excel').addEventListener('click', function() {
-        fetch('download-pdf.php')
-            .then(response => response.json())
-            .then(data => {
-                // Create a new workbook and worksheet
-                const ws = XLSX.utils.json_to_sheet(data.map((student, index) => ({
-                    '#': index + 1,
-                    'Roll No': student.student_roll,
-                    'Full Name': student.student_first_name + ' ' + student.student_last_name,
-                    'Email': student.student_email,
-                    'Contact Number': student.student_contact,
-                    'Course': student.course_name,
-                    'Type': student.student_type,
-                    'DOB': new Date(student.student_dob).toLocaleDateString(),
-                })));
-
-                const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, 'Students');
-
-                // Save the workbook as an Excel file
-                XLSX.writeFile(wb, 'students_report.xlsx');
-            })
-            .catch(error => console.error('Error fetching data:', error));
-    });
-
+<script> 
+ 
     // Fetch data for print
     const fetchStudentData = async () => {
         try {
@@ -267,7 +180,7 @@ include "../component/sidebar.php";
         const originalContents = document.body.innerHTML;
         document.body.innerHTML = printContents;
         window.print();
-        document.body.innerHTML = originalContents;
+        window.location.reload();
     };
     document.getElementById('print-page').addEventListener('click', function() {
         printStudentData();
