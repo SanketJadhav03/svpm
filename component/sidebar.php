@@ -32,7 +32,7 @@
                with font-awesome or any other icon font library -->
 
           <?php
-          if ($_SESSION["user_role"] == 1 || $_SESSION["user_role"] == 2) {
+          if ($_SESSION["user_role"] == 1) {
           ?>
             <li class="nav-item">
               <a href="<?php echo $base_url; ?>index.php" class="nav-link">
@@ -42,7 +42,7 @@
             </li>
             <li class="nav-item">
               <a href="<?php echo $base_url; ?>principle/index.php" class="nav-link">
-                <i class="nav-icon fas fa-university"></i> 
+                <i class="nav-icon fas fa-university"></i>
                 <p>Principle</p>
               </a>
             </li>
@@ -130,6 +130,75 @@
             </ul>
 
           </li> -->
+          <?php
+          }
+          ?>
+          <?php
+          if ($_SESSION["user_role"] == 2) {
+          ?>
+          <li class="nav-item">
+              <a href="<?php echo $base_url; ?>index.php" class="nav-link">
+                <i class="nav-icon fas fa-chart-pie"></i>
+                <p>Dashboard</p>
+              </a>
+            </li> 
+            <li class="nav-item">
+              <a href="<?php echo $base_url; ?>faculty/index.php" class="nav-link">
+                <i class="nav-icon fas fa-chalkboard"></i>
+
+                <p>Faculty</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="<?php echo $base_url; ?>student/index.php" class="nav-link">
+                <i class="nav-icon fas fa-graduation-cap"></i>
+
+                <p>Student</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="<?php echo $base_url; ?>attendence/attendencelist.php" class="nav-link">
+                <i class="nav-icon fas fa-calendar-check"></i>
+
+                <p>Attendence</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="<?php echo $base_url; ?>department/index.php" class="nav-link">
+                <i class="nav-icon fas fa-building"></i>
+
+                <p>Department</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="<?php echo $base_url; ?>courses/index.php" class="nav-link">
+                <i class="nav-icon fas fa-book"></i>
+
+                <p>Courses</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="<?php echo $base_url; ?>subject/index.php" class="nav-link">
+                <i class="nav-icon fas fa-file-alt"></i>
+
+                <p>Subject</p>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a href="<?php echo $base_url; ?>notice/index.php" class="nav-link">
+                <i class="nav-icon fas fa-sticky-note"></i>
+
+                <p>Notices</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="<?php echo $base_url; ?>exam/index.php" class="nav-link">
+                <i class="fas fa-clipboard-list nav-icon"></i>
+
+                <p>Manage Exams</p>
+              </a>
+            </li>
           <?php
           }
           ?>
