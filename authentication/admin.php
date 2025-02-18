@@ -1,29 +1,30 @@
 <?php
-// Start session to store user data
 session_start();
+include "../config/connection.php";
 $base_url = 'http://' . $_SERVER['HTTP_HOST'] . '/svpm/';
-// Simulate a simple user database (you can replace this with a real database)
 $valid_username = "admin";
 $valid_password = "admin";
-
-// Check if username and password are set in POST request
 if (isset($_POST['username']) && isset($_POST['password'])) {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
+    $username = mysqli_real_escape_string($conn, $_POST['username']);
+    $password = $_POST['password'];  
+    $query = "SELECT * FROM admins WHERE username = '$username' LIMIT 1";
+    $result = mysqli_query($conn, $query);
 
-    // Validate the credentials
-    if ($username === $valid_username && $password === $valid_password) {
-        // Set a session variable to indicate successful login
-        $_SESSION['user_role'] = 1;
-        $_SESSION['username'] = $username;
-
-        // Redirect to a dashboard page or home page
-        header("Location: $base_url");
-        exit();
+    if ($result && mysqli_num_rows($result) > 0) {
+        $principal = mysqli_fetch_assoc($result); 
+        if (password_verify($password, $principal['password'])) { 
+            $_SESSION['user_role'] = 1;  
+            $_SESSION['username'] = $principal['username']; 
+            header("Location: {$base_url}");
+            exit();
+        } else {
+            $error_message = "Invalid username or password!";
+            header("Location: admin.php?error=" . urlencode($error_message));
+            exit();
+        }
     } else {
-        // Redirect back to the login form with an error message
         $error_message = "Invalid username or password!";
-        header("Location: admin.php?error=$error_message");
+        header("Location: admin.php?error=" . urlencode($error_message));
         exit();
     }
 }  

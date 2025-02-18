@@ -46,7 +46,7 @@ if (isset($_POST['faculty_email']) && isset($_POST['faculty_password'])) {
     } else {
         // No faculty found with the entered email
         $error_message = "Faculty not found!";
-        header("Location: faculty_login.php?error=" . urlencode($error_message));
+        header("Location: faculty.php?error=" . urlencode($error_message));
         exit();
     }
 
@@ -257,11 +257,9 @@ if (isset($_POST['faculty_email']) && isset($_POST['faculty_password'])) {
             <div class="success-message" id="success-message">Logged in successfully!</div>
         </form>
 
-        <div class="forgot-password">
-            <a href="#">Forgot Password?</a>
+        <div class="forgot-password"><a href="#">Forgot Password?</a>
         </div>
-        <div class="back-to-home">
-            <a href="<?= $base_url ?>authentication/">← Back to Home</a>
+        <div class="back-to-home"><a href="<?= $base_url ?>authentication/">← Back to Home</a>
         </div>
         <div class="crack-effect" id="crack-effect"></div> <!-- Crack effect div -->
     </div>

@@ -19,7 +19,7 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
         if (password_verify($password, $principal['principal_password'])) {
             // Set session variables
             $_SESSION['user_role'] = 2; // Assign role for principal
-            $_SESSION['username'] = $principal['principal_email'];
+            $_SESSION['username'] = $principal['principal_name'];
 
             // Redirect to dashboard
             header("Location: {$base_url}");
