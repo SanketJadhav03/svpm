@@ -78,7 +78,7 @@ include "../component/sidebar.php";
                    $whereClause = ""; // Initialize as empty
                    
                    // Check if the user role exists and is associated with a department
-                   if (isset($_SESSION["user_role"]) && $_SESSION["user_role"] == 4 && isset($_SESSION["department_id"])) {
+                   if (isset($_SESSION["department_id"])) {
                        $department_id = $_SESSION["department_id"];
                        $whereClause = " WHERE tbl_course.course_department_id = $department_id";
                    }

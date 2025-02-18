@@ -29,12 +29,13 @@ if (isset($_POST['faculty_email']) && isset($_POST['faculty_password'])) {
         if ($faculty_password ==  $faculty['faculty_password']) {
 
             // Set session variables
-            $_SESSION['user_role'] = 4;  // Assuming role 4 is for facultys
+            $_SESSION['user_role'] = 5;  // Assuming role 5 is for facultys
             $_SESSION['username'] = $faculty['faculty_name'];
             $_SESSION['faculty_id'] = $faculty['faculty_id'];
+            $_SESSION['department_id'] = $faculty['faculty_department_id'];
 
             // Redirect to the dashboard or home page
-            header("Location: $base_url");
+            header("Location: {$base_url}dashboard/faculty.php");
             exit();
         } else {
             // Incorrect password

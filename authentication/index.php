@@ -140,9 +140,9 @@
         <a href="principle.php" class="btn btn-lg btn-primary" id="principle-login">Principle</a>
     </div>
     <div class="role-buttons">
-        <a href="faculty.php" class="btn btn-lg btn-primary" id="faculty-login">Faculty</a>
         <a href="student.php" class="btn btn-lg btn-primary" id="student-login">Student</a>
         <a href="department.php" class="btn btn-lg btn-primary" id="department-login">Department</a>
+        <a href="faculty.php" class="btn btn-lg btn-primary" id="faculty-login">Faculty</a>
     </div>
     
     <div class="crack-effect" id="crack-effect"></div> <!-- Crack effect div -->

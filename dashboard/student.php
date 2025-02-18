@@ -156,26 +156,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_timetable'])) {
             <div class="card-body">
                 <h2 class="font-weight-bold">Student Dashboard - <?= $row["student_roll"] ?></h2>
 
-                <?php if ($result->num_rows > 0): ?>
-                    <table class="table table-bordered mt-3">
-                        <thead class="thead- ">
-                            <tr>
-                                <th>Course Name</th>
-                                <th>Course Code</th>
-                                <th>Department</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><?= htmlspecialchars($row['course_name']) ?></td>
-                                <td><?= htmlspecialchars($row['course_code']) ?></td>
-                                <td><?= htmlspecialchars($row['department_name']) ?></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                <?php else: ?>
-                    <p class="text-danger mt-3">No course details found.</p>
-                <?php endif; ?>
+
+                <table class="table table-bordered mt-3">
+                    <thead class="thead- ">
+                        <tr>
+                            <th>Course Name</th>
+                            <th>Course Code</th>
+                            <th>Department</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><?= htmlspecialchars($row['course_name']) ?></td>
+                            <td><?= htmlspecialchars($row['course_code']) ?></td>
+                            <td><?= htmlspecialchars($row['department_name']) ?></td>
+                        </tr>
+                    </tbody>
+                </table>
 
             </div>
         </div>
