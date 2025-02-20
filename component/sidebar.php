@@ -163,6 +163,13 @@
               </a>
             </li>
             <li class="nav-item">
+              <a href="<?php echo $base_url; ?>attendence/facultyattendence.php" class="nav-link">
+                <i class="nav-icon fas fa-calendar-check"></i>
+
+                <p>Faculty Attendance</p>
+              </a>
+            </li>
+            <li class="nav-item">
               <a href="<?php echo $base_url; ?>department/index.php" class="nav-link">
                 <i class="nav-icon fas fa-building"></i>
 
@@ -261,6 +268,13 @@
                 <i class="nav-icon fas fa-calendar-check"></i>
 
                 <p>Student Attendance</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="<?php echo $base_url; ?>attendence/facultyattendence.php" class="nav-link">
+                <i class="nav-icon fas fa-calendar-check"></i>
+
+                <p>Faculty Attendance</p>
               </a>
             </li>
             <li class="nav-item">

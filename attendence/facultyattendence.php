@@ -4,7 +4,12 @@ include "../component/header.php";
 include "../component/sidebar.php";
 
 // Get filters
-$departmentId = isset($_GET['department_id']) ? mysqli_real_escape_string($conn, $_GET['department_id']) : '';
+
+$departmentId = isset($_SESSION["department_id"]) 
+    ? $_SESSION["department_id"] 
+    : (isset($_GET['department_id']) 
+        ? mysqli_real_escape_string($conn, $_GET['department_id']) 
+        : '');
 $startDate = isset($_GET['start_date']) ? mysqli_real_escape_string($conn, $_GET['start_date']) : date('Y-m-d');
 $endDate = isset($_GET['end_date']) ? mysqli_real_escape_string($conn, $_GET['end_date']) : date('Y-m-d');
 
@@ -53,7 +58,7 @@ $totalFaculty = $totalFacultyData['total_faculty'] ?? 0;
                             <div class="row">
                                 <div class="form-group col-4">
                                     <label for="department">Select Department:</label>
-                                    <select name="department_id" id="department" class="form-control">
+                                    <select <?= isset($_SESSION["department_id"]) ?" disabled":"" ?> name="department_id" id="department" class="form-control">
                                         <option value="">All Departments</option>
                                         <?php
                                         $deptQuery = "SELECT * FROM tbl_department ORDER BY department_name";
@@ -67,7 +72,7 @@ $totalFaculty = $totalFacultyData['total_faculty'] ?? 0;
                                 </div>
                                 <div class="form-group col-3">
                                     <label for="start_date">Start Date:</label>
-                                    <input type="date" name="start_date" id="start_date" class="form-control" 
+                                    <input type="date" name="start_date" id="start_date" class="form-control"
                                         value="<?php echo htmlspecialchars($startDate); ?>">
                                 </div>
                                 <div class="form-group col-3">
@@ -105,7 +110,7 @@ $totalFaculty = $totalFacultyData['total_faculty'] ?? 0;
                             <table class="table text-center">
                                 <thead>
                                     <tr>
-                                        <th>#</th> 
+                                        <th>#</th>
                                         <th>Name</th>
                                         <th>Department</th>
                                         <th>Date & Time</th>
