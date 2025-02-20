@@ -96,6 +96,21 @@
               </a>
             </li>
             <li class="nav-item">
+              <a href="<?php echo $base_url; ?>notice/index.php" class="nav-link">
+                <i class="nav-icon fas fa-sticky-note"></i>
+
+                <p>Notices</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="<?php echo $base_url; ?>exam/index.php" class="nav-link">
+                <i class="fas fa-clipboard-list nav-icon"></i>
+
+                <p>Manage Exams</p>
+              </a>
+            </li>
+
+            <li class="nav-item">
               <a href="<?= $base_url ?>#" class="nav-link">
                 <i class="fas fa-chart-bar nav-icon"></i>
                 <p>
@@ -110,22 +125,8 @@
                     <p>Student Report</p>
                   </a>
                 </li>
-                
+
               </ul>
-            </li>
-            <li class="nav-item">
-              <a href="<?php echo $base_url; ?>notice/index.php" class="nav-link">
-                <i class="nav-icon fas fa-sticky-note"></i>
-
-                <p>Notices</p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="<?php echo $base_url; ?>exam/index.php" class="nav-link">
-                <i class="fas fa-clipboard-list nav-icon"></i>
-
-                <p>Manage Exams</p>
-              </a>
             </li>
 
 
@@ -205,7 +206,24 @@
                 <p>Manage Exams</p>
               </a>
             </li>
+            <li class="nav-item">
+              <a href="<?= $base_url ?>#" class="nav-link">
+                <i class="fas fa-chart-bar nav-icon"></i>
+                <p>
+                  Reports
+                  <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="<?= $base_url ?>reports/student.php" class="nav-link">
+                    <i class="fas fa-long-arrow-alt-right nav-icon"></i>
+                    <p>Student Report</p>
+                  </a>
+                </li>
 
+              </ul>
+            </li>
           <?php
           }
           ?>
@@ -234,6 +252,12 @@
               <a href="<?php echo $base_url; ?>student/idcard.php?student_id=<?php echo isset($_SESSION["student_id"]) ? $_SESSION["student_id"] : ""; ?>" class="nav-link">
                 <i class="nav-icon fas fa-id-card"></i>
                 <p>Generate Id</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="<?php echo $base_url; ?>student/results.php" class="nav-link">
+                <i class="nav-icon fas fa-poll"></i>
+                <p>Result Section</p>
               </a>
             </li>
           <?php
@@ -305,6 +329,25 @@
                 <p>Manage Exams</p>
               </a>
             </li>
+
+            <li class="nav-item">
+              <a href="<?= $base_url ?>#" class="nav-link">
+                <i class="fas fa-chart-bar nav-icon"></i>
+                <p>
+                  Reports
+                  <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="<?= $base_url ?>reports/student.php" class="nav-link">
+                    <i class="fas fa-long-arrow-alt-right nav-icon"></i>
+                    <p>Student Report</p>
+                  </a>
+                </li>
+
+              </ul>
+            </li>
           <?php
           }
           ?>
@@ -351,6 +394,42 @@
                 <i class="fas fa-clipboard-list nav-icon"></i>
                 <p>Manage Exams</p>
               </a>
+            </li>
+            <li class="nav-item">
+              <a href="<?= $base_url ?>#" class="nav-link">
+                <i class="fas fa-tasks nav-icon"></i>
+                <p>
+                  Manage Assignment
+                  <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="<?= $base_url ?>faculty/upload_assignment.php" class="nav-link">
+                    <i class="fas fa-long-arrow-alt-right nav-icon"></i>
+                    <p>Upload Assignment</p>
+                  </a>
+                </li>
+
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a href="<?= $base_url ?>#" class="nav-link">
+                <i class="fas fa-chart-bar nav-icon"></i>
+                <p>
+                  Reports
+                  <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="<?= $base_url ?>reports/student.php" class="nav-link">
+                    <i class="fas fa-long-arrow-alt-right nav-icon"></i>
+                    <p>Student Report</p>
+                  </a>
+                </li>
+
+              </ul>
             </li>
           <?php
           }

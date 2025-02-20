@@ -37,7 +37,13 @@ include "../component/sidebar.php";
                     </tr>
                     <?php
                     $count = 0;
-                    $query = "SELECT * FROM `tbl_students` INNER JOIN `tbl_course` ON tbl_course.course_id = tbl_students.student_course";
+                    $department_id = isset($_SESSION["department_id"])? $_SESSION["department_id"] : 0;
+                    if ($department_id > 0) {
+
+                        $query = "SELECT * FROM `tbl_students` INNER JOIN `tbl_course` ON tbl_course.course_id = tbl_students.student_course WHERE tbl_course.course_department_id = '$department_id'";
+                    } else {
+                        $query = "SELECT * FROM `tbl_students` INNER JOIN `tbl_course` ON tbl_course.course_id = tbl_students.student_course  ";
+                    }
                     if (isset($_GET["student_name"])) {
                         $student_name = mysqli_real_escape_string($conn, $_GET["student_name"]);
                         $query .= " WHERE `student_first_name` LIKE '%$student_name%' OR `student_last_name` LIKE '%$student_name%'";
@@ -58,10 +64,10 @@ include "../component/sidebar.php";
                             <td>
                                 <a href="view.php?student_id=<?= $data["student_id"] ?>" class="btn btn-sm shadow btn-info">
                                     <i class="fa fa-eye"></i>
-                                </a> 
-                                    <a href="upload_result.php?student_id=<?= $data["student_id"] ?>" class="btn btn-sm btn-success">
-                                    <i class="fa fa-upload"></i>  Result
-                                    </a> 
+                                </a>
+                                <a href="upload_result.php?student_id=<?= $data["student_id"] ?>" class="btn btn-sm btn-success">
+                                    <i class="fa fa-upload"></i> Result
+                                </a>
                             </td>
                         </tr>
                     <?php }

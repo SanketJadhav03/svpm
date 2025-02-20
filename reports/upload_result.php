@@ -15,32 +15,62 @@ $query = "SELECT * FROM `tbl_students` s
 $result = mysqli_query($conn, $query);
 $data = mysqli_fetch_array($result);
 
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $course_id = mysqli_real_escape_string($conn, $_POST["course_id"]);
     $semester = mysqli_real_escape_string($conn, $_POST["semester"]);
     $result_description = mysqli_real_escape_string($conn, $_POST["result_description"]);
     $percentage = mysqli_real_escape_string($conn, $_POST["percentage"]);
 
+    // Check if a result already exists for this student and semester
+    $checkQuery = "SELECT result_id, result_file FROM tbl_results WHERE student_id = '$student_id' AND semester = '$semester'";
+    $checkResult = mysqli_query($conn, $checkQuery);
+    $existingData = mysqli_fetch_assoc($checkResult);
+
     // File Upload Handling
+    $fileName = "";
     if (!empty($_FILES["result_file"]["name"])) {
         $fileName = time() . "_" . basename($_FILES["result_file"]["name"]);
         $targetDir = "../uploads/results/";
         $targetFile = $targetDir . $fileName;
 
-        if (move_uploaded_file($_FILES["result_file"]["tmp_name"], $targetFile)) {
-            $query = "INSERT INTO tbl_results (student_id, course_id, semester, result_description, percentage, result_file) 
-                      VALUES ('$student_id', '$course_id', '$semester', '$result_description', '$percentage', '$fileName')";
-            if (mysqli_query($conn, $query)) {
-                echo "<script>alert('Result Uploaded Successfully!'); window.location.href='view.php?student_id=$student_id';</script>";
-            } else {
-                echo "<script>alert('Database Error!');</script>";
-            }
-        } else {
+        if (!move_uploaded_file($_FILES["result_file"]["tmp_name"], $targetFile)) {
             echo "<script>alert('File Upload Failed!');</script>";
+            exit();
+        }
+    }
+
+    if ($existingData) {
+        // Update existing record
+        $result_id = $existingData["result_id"];
+        $updateQuery = "UPDATE tbl_results 
+                        SET result_description = '$result_description', 
+                            percentage = '$percentage'";
+
+        // Update file only if a new file is uploaded
+        if (!empty($fileName)) {
+            // Delete old file before updating
+            if (!empty($existingData["result_file"]) && file_exists("../uploads/results/" . $existingData["result_file"])) {
+                unlink("../uploads/results/" . $existingData["result_file"]);
+            }
+            $updateQuery .= ", result_file = '$fileName'";
+        }
+
+        $updateQuery .= " WHERE result_id = '$result_id'";
+
+        if (mysqli_query($conn, $updateQuery)) {
+            echo "<script>alert('Result Updated Successfully!'); window.location.href='view.php?student_id=$student_id';</script>";
+        } else {
+            echo "<script>alert('Database Error!');</script>";
         }
     } else {
-        echo "<script>alert('Please Select a File!');</script>";
+        // Insert new record
+        $insertQuery = "INSERT INTO tbl_results (student_id, course_id, semester, result_description, percentage, result_file) 
+                        VALUES ('$student_id', '$course_id', '$semester', '$result_description', '$percentage', '$fileName')";
+        if (mysqli_query($conn, $insertQuery)) {
+            echo "<script>alert('Result Uploaded Successfully!'); window.location.href='view.php?student_id=$student_id';</script>";
+        } else {
+            echo "<script>alert('Database Error!');</script>";
+        }
     }
 }
 ?>
@@ -61,8 +91,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <label>Semester</label>
                     <select name="semester" class="form-control font-weight-bold" required>
                         <option value="">Select Semester</option>
-                        <?php for ($i = 1; $i <= $data["course_duration"]; $i++) { // Assuming max 8 semesters 
-                        ?>
+                        <?php for ($i = 1; $i <= $data["course_duration"]; $i++) { ?>
                             <option value="<?= $i ?>">Semester <?= $i ?></option>
                         <?php } ?>
                     </select>
@@ -77,10 +106,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
                 <div class="mb-3">
                     <label>Upload Result File (PDF, DOCX, or Image)</label>
-                    <input type="file" name="result_file" class="form-control font-weight-bold" accept=".pdf,.docx,.jpg,.png,.jpeg" required>
+                    <input type="file" name="result_file" class="form-control font-weight-bold" accept=".pdf,.docx,.jpg,.png,.jpeg">
                 </div>
                 <div class="text-center">
-                    <button type="submit" class="btn btn-success">Upload Result</button>
+                    <button type="submit" class="btn btn-success">Upload/Update Result</button>
                 </div>
             </form>
         </div>
