@@ -64,7 +64,14 @@
               <a href="<?php echo $base_url; ?>attendence/attendencelist.php" class="nav-link">
                 <i class="nav-icon fas fa-calendar-check"></i>
 
-                <p>Attendence</p>
+                <p>Student Attendance</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="<?php echo $base_url; ?>attendence/facultyattendence.php" class="nav-link">
+                <i class="nav-icon fas fa-calendar-check"></i>
+
+                <p>Faculty Attendance</p>
               </a>
             </li>
             <li class="nav-item">
@@ -88,7 +95,24 @@
                 <p>Subject</p>
               </a>
             </li>
-
+            <li class="nav-item">
+              <a href="<?= $base_url ?>#" class="nav-link">
+                <i class="fas fa-chart-bar nav-icon"></i>
+                <p>
+                  Reports
+                  <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="<?= $base_url ?>reports/student.php" class="nav-link">
+                    <i class="fas fa-long-arrow-alt-right nav-icon"></i>
+                    <p>Student Report</p>
+                  </a>
+                </li>
+                
+              </ul>
+            </li>
             <li class="nav-item">
               <a href="<?php echo $base_url; ?>notice/index.php" class="nav-link">
                 <i class="nav-icon fas fa-sticky-note"></i>
@@ -104,44 +128,19 @@
               </a>
             </li>
 
-            <!-- <li class="nav-item">
-            <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-users"></i>
-              <p>
-                User's
-                <i class="right fas fa-angle-left"></i>
-              </p>
-            </a>
-            <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <a href="<?php echo $base_url; ?>student/index.php" class="nav-link">
-                  <i class="fas fa-long-arrow-alt-right nav-icon"></i>
-                  <p>Student</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="<?php echo $base_url; ?>student/index.php" class="nav-link">
-                  <i class="fas fa-long-arrow-alt-right nav-icon"></i>
-                  <p>Faculty</p>
-                </a>
-              </li>
-               
-              
-            </ul>
 
-          </li> -->
           <?php
           }
           ?>
           <?php
           if ($_SESSION["user_role"] == 2) {
           ?>
-          <li class="nav-item">
+            <li class="nav-item">
               <a href="<?php echo $base_url; ?>index.php" class="nav-link">
                 <i class="nav-icon fas fa-chart-pie"></i>
                 <p>Dashboard</p>
               </a>
-            </li> 
+            </li>
             <li class="nav-item">
               <a href="<?php echo $base_url; ?>faculty/index.php" class="nav-link">
                 <i class="nav-icon fas fa-chalkboard"></i>
@@ -160,7 +159,7 @@
               <a href="<?php echo $base_url; ?>attendence/attendencelist.php" class="nav-link">
                 <i class="nav-icon fas fa-calendar-check"></i>
 
-                <p>Attendence</p>
+                <p>Student Attendance</p>
               </a>
             </li>
             <li class="nav-item">
@@ -199,6 +198,7 @@
                 <p>Manage Exams</p>
               </a>
             </li>
+
           <?php
           }
           ?>
@@ -214,7 +214,7 @@
             <li class="nav-item">
               <a href="<?php echo $base_url; ?>student/attendence.php" class="nav-link">
                 <i class="nav-icon fas fa-calendar-check"></i>
-                <p>Attendance</p>
+                <p>Mark Attendance</p>
               </a>
             </li>
             <li class="nav-item">
@@ -260,7 +260,7 @@
               <a href="<?php echo $base_url; ?>attendence/attendencelist.php" class="nav-link">
                 <i class="nav-icon fas fa-calendar-check"></i>
 
-                <p>Attendence</p>
+                <p>Student Attendance</p>
               </a>
             </li>
             <li class="nav-item">
@@ -305,10 +305,17 @@
               </a>
             </li>
             <li class="nav-item">
+              <a href="<?php echo $base_url; ?>faculty/attendence.php" class="nav-link">
+                <i class="nav-icon fas fa-calendar-check"></i>
+
+                <p>Mark Attendance</p>
+              </a>
+            </li>
+            <li class="nav-item">
               <a href="<?php echo $base_url; ?>attendence/attendencelist.php" class="nav-link">
                 <i class="nav-icon fas fa-calendar-check"></i>
 
-                <p>Attendence</p>
+                <p>Student Attendance</p>
               </a>
             </li>
             <li class="nav-item">

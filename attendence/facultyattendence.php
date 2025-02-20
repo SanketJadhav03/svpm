@@ -4,15 +4,15 @@ include "../component/header.php";
 include "../component/sidebar.php";
 
 // Get filters
-$courseId = isset($_GET['course_id']) ? mysqli_real_escape_string($conn, $_GET['course_id']) : '';
+$departmentId = isset($_GET['department_id']) ? mysqli_real_escape_string($conn, $_GET['department_id']) : '';
 $startDate = isset($_GET['start_date']) ? mysqli_real_escape_string($conn, $_GET['start_date']) : date('Y-m-d');
 $endDate = isset($_GET['end_date']) ? mysqli_real_escape_string($conn, $_GET['end_date']) : date('Y-m-d');
 
-// Fetch total present students for this course
-$presentQuery = "SELECT COUNT(DISTINCT attendance_student_id) AS total_present 
-                 FROM tbl_attendance 
-                 WHERE attendance_student_id IN 
-                 (SELECT student_id FROM tbl_students WHERE student_course = '$courseId')";
+// Fetch total present faculty in the selected department
+$presentQuery = "SELECT COUNT(DISTINCT attendance_faculty_id) AS total_present 
+                 FROM tbl_faculty_attendance 
+                 WHERE attendance_faculty_id IN 
+                 (SELECT faculty_id FROM tbl_faculty WHERE faculty_department_id = '$departmentId')";
 
 if (!empty($startDate) && !empty($endDate)) {
     $presentQuery .= " AND attendance_date BETWEEN '$startDate 00:00:00' AND '$endDate 23:59:59'";
@@ -22,60 +22,46 @@ $presentResult = mysqli_query($conn, $presentQuery);
 $presentData = mysqli_fetch_assoc($presentResult);
 $totalPresent = $presentData['total_present'] ?? 0;
 
-// Fetch total students enrolled in this course
-$totalStudentQuery = "SELECT COUNT(*) AS total_students FROM tbl_students WHERE student_course = '$courseId'";
-$totalStudentResult = mysqli_query($conn, $totalStudentQuery);
-$totalStudentData = mysqli_fetch_assoc($totalStudentResult);
-$totalStudents = $totalStudentData['total_students'] ?? 0;
+// Fetch total faculty in the department
+$totalFacultyQuery = "SELECT COUNT(*) AS total_faculty FROM tbl_faculty WHERE faculty_department_id = '$departmentId'";
+$totalFacultyResult = mysqli_query($conn, $totalFacultyQuery);
+$totalFacultyData = mysqli_fetch_assoc($totalFacultyResult);
+$totalFaculty = $totalFacultyData['total_faculty'] ?? 0;
 ?>
 
 <div class="content-wrapper">
     <div class="container-fluid p-2">
         <div class="card">
             <div class="card-header">
-                <div class="card-title font-weight-bold">Attendance Summary</div>
+                <div class="card-title font-weight-bold">Faculty Attendance Summary</div>
             </div>
             <div class="card-body">
                 <div class="row">
                     <div class="col-3">
-                        <canvas id="attendancePieChart"></canvas>
-                        <div class="container d-flex font-weight-bold  justify-content-between py-3">
+                        <canvas id="facultyAttendancePieChart"></canvas>
+                        <div class="container d-flex font-weight-bold justify-content-between py-3">
                             <div class="text-success">
-                                Present: <?php echo $totalPresent; ?>/<?php echo $totalStudents; ?>
+                                Present: <?php echo $totalPresent; ?>/<?php echo $totalFaculty; ?>
                             </div>
                             <div class="text-danger">
-                                Absent: <?php echo $totalStudents - $totalPresent; ?>/<?php echo $totalStudents; ?>
+                                Absent: <?php echo $totalFaculty - $totalPresent; ?>/<?php echo $totalFaculty; ?>
                             </div>
                         </div>
                     </div>
                     <div class="col-9">
                         <form method="GET" action="">
                             <div class="row">
-                                <div class="form-group col-3">
-                                    <label for="course">Select Course:</label>
-                                    <select name="course_id" id="course" class="form-control">
-                                        <option value="">All Courses</option>
+                                <div class="form-group col-4">
+                                    <label for="department">Select Department:</label>
+                                    <select name="department_id" id="department" class="form-control">
+                                        <option value="">All Departments</option>
                                         <?php
-                                        $departmentLogin = $_SESSION['department_id'] ?? 0;
-                                        $deptQuery = "SELECT * FROM tbl_department d
-                                                      LEFT JOIN tbl_course c ON d.department_id = c.course_department_id";
-                                        if ($departmentLogin) {
-                                            $deptQuery .= " WHERE d.department_id = $departmentLogin";
-                                        }
-                                        $deptQuery .= " ORDER BY d.department_name, c.course_name";
+                                        $deptQuery = "SELECT * FROM tbl_department ORDER BY department_name";
                                         $deptResult = mysqli_query($conn, $deptQuery);
-
-                                        $currentDept = null;
-                                        while ($course = mysqli_fetch_assoc($deptResult)) {
-                                            if ($currentDept !== $course['department_name']) {
-                                                if ($currentDept !== null) echo "</optgroup>";
-                                                $currentDept = $course['department_name'];
-                                                echo "<optgroup label='{$currentDept}'>";
-                                            }
-                                            $selected = ($courseId == $course['course_id']) ? "selected" : "";
-                                            echo "<option value='{$course['course_id']}' $selected>{$course['course_name']}</option>";
+                                        while ($dept = mysqli_fetch_assoc($deptResult)) {
+                                            $selected = ($departmentId == $dept['department_id']) ? "selected" : "";
+                                            echo "<option value='{$dept['department_id']}' $selected>{$dept['department_name']}</option>";
                                         }
-                                        echo "</optgroup>";
                                         ?>
                                     </select>
                                 </div>
@@ -89,27 +75,27 @@ $totalStudents = $totalStudentData['total_students'] ?? 0;
                                     <input type="date" name="end_date" id="end_date" class="form-control"
                                         value="<?php echo htmlspecialchars($endDate); ?>">
                                 </div>
-                                <div class="col-3">
+                                <div class="col-2">
                                     <button type="submit" class="mt-4 btn btn-primary">Filter</button>
-                                    <a href="attendencelist.php" class="btn mt-4 btn-secondary">Clear</a>
+                                    <a href="faculty_attendance.php" class="btn mt-4 btn-secondary">Clear</a>
                                 </div>
                             </div>
                         </form>
 
                         <?php
-                        $query = "SELECT s.student_id, s.student_first_name, c.course_name, c.course_id, 
+                        // Query to fetch faculty attendance
+                        $query = "SELECT f.faculty_id, f.faculty_name, d.department_name, 
                                   a.attendance_photo, a.attendance_date 
-                                  FROM tbl_students AS s
-                                  LEFT JOIN tbl_attendance AS a 
-                                  ON s.student_id = a.attendance_student_id 
+                                  FROM tbl_faculty AS f
+                                  LEFT JOIN tbl_faculty_attendance AS a 
+                                  ON f.faculty_id = a.attendance_faculty_id 
                                   AND a.attendance_date BETWEEN '$startDate 00:00:00' AND '$endDate 23:59:59'
-                                  INNER JOIN tbl_course AS c ON s.student_course = c.course_id";
+                                  INNER JOIN tbl_department AS d ON f.faculty_department_id = d.department_id";
 
                         $conditions = [];
-                        if ($departmentLogin) $conditions[] = "c.course_department_id = $departmentLogin";
-                        if (!empty($courseId)) $conditions[] = "s.student_course = '$courseId'";
+                        if (!empty($departmentId)) $conditions[] = "f.faculty_department_id = '$departmentId'";
                         if (!empty($conditions)) $query .= " WHERE " . implode(" AND ", $conditions);
-                        $query .= " ORDER BY c.course_name, a.attendance_date DESC";
+                        $query .= " ORDER BY d.department_name, a.attendance_date DESC";
 
                         $result = mysqli_query($conn, $query);
                         $totalRecords = mysqli_num_rows($result);
@@ -119,10 +105,9 @@ $totalStudents = $totalStudentData['total_students'] ?? 0;
                             <table class="table text-center">
                                 <thead>
                                     <tr>
-                                        <th>#</th>
-                                        <th>Image</th>
+                                        <th>#</th> 
                                         <th>Name</th>
-                                        <th>Course</th>
+                                        <th>Department</th>
                                         <th>Date & Time</th>
                                         <th>Status</th>
                                     </tr>
@@ -137,9 +122,8 @@ $totalStudents = $totalStudentData['total_students'] ?? 0;
                                             $attendanceDate = $row['attendance_date'] ? date('d-m-Y h:i:s A', strtotime($row['attendance_date'])) : "N/A";
                                             echo "<tr>
                                                     <td>{$count}</td>
-                                                    <td><img src='{$base_url}assets/images/studentattendence/{$image}' width='100'></td> 
-                                                    <td>{$row['student_first_name']}</td> 
-                                                    <td>{$row['course_name']}</td>  
+                                                    <td>{$row['faculty_name']}</td> 
+                                                    <td>{$row['department_name']}</td>  
                                                     <td>{$attendanceDate}</td>
                                                     <td>{$status}</td>  
                                                 </tr>";
@@ -162,13 +146,13 @@ $totalStudents = $totalStudentData['total_students'] ?? 0;
 <!-- Add Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    var ctx = document.getElementById('attendancePieChart').getContext('2d');
+    var ctx = document.getElementById('facultyAttendancePieChart').getContext('2d');
     new Chart(ctx, {
         type: 'pie',
         data: {
             labels: ['Present', 'Absent'],
             datasets: [{
-                data: [<?php echo $totalPresent; ?>, <?php echo $totalStudents - $totalPresent; ?>],
+                data: [<?php echo $totalPresent; ?>, <?php echo $totalFaculty - $totalPresent; ?>],
                 backgroundColor: ['#28a745', '#dc3545']
             }]
         }

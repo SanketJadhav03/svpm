@@ -1,5 +1,5 @@
 <?php
-$title = "Department Dashboard";
+$title = "Faculty Dashboard";
 include "../config/connection.php";
 include("../component/header.php");
 include("../component/sidebar.php");
