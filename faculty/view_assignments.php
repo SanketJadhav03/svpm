@@ -30,7 +30,7 @@ $conn->close();
 ?>
 
 <div class="content-wrapper">
-    <div class="container-fluid">
+    <div class="container-fluid pt-2">
         <div class="card p-3">
             <h2>View Assignments</h2>
             <?php if (!empty($assignments_by_course)): ?>

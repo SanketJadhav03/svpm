@@ -16,22 +16,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!empty($_FILES["assignment_file"]["name"])) {
         $file_name = time() . "_" . basename($_FILES["assignment_file"]["name"]);
         $target_file = $upload_dir . $file_name;
-        $file_type = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-
-        // Allowed file types
-        $allowed_types = ["pdf", "doc", "docx", "ppt", "pptx"];
-
-        if (in_array($file_type, $allowed_types)) {
-            if (move_uploaded_file($_FILES["assignment_file"]["tmp_name"], $target_file)) {
-                $assignment_file = $file_name;
-            } else {
-                echo "<script>alert('Error uploading file.');</script>";
-            }
+    
+        if (move_uploaded_file($_FILES["assignment_file"]["tmp_name"], $target_file)) {
+            $assignment_file = $file_name;
         } else {
-            echo "<script>alert('Invalid file type. Allowed: PDF, DOC, DOCX, PPT, PPTX');</script>";
+            echo "<script>alert('Error uploading file.');</script>";
         }
     }
-
+    
     // Insert assignment data into the database
     $sql = "INSERT INTO tbl_assignments (faculty_id, course_id, subject_id, assignment_title, assignment_description, assignment_file)
             VALUES (?, ?, ?, ?, ?, ?)";

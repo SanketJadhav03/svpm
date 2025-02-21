@@ -410,6 +410,12 @@
                     <p>Upload Assignment</p>
                   </a>
                 </li>
+                <li class="nav-item">
+                  <a href="<?= $base_url ?>faculty/view_assignments.php" class="nav-link">
+                    <i class="fas fa-long-arrow-alt-right nav-icon"></i>
+                    <p>View Assignment</p>
+                  </a>
+                </li>
 
               </ul>
             </li>
