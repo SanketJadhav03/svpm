@@ -3,38 +3,67 @@ include "../config/connection.php"; // Database connection
 include "../component/header.php";
 include "../component/sidebar.php"; 
 
-$query = "SELECT a.*, c.course_id, c.course_name, s.subject_name, s.subject_for, 
-                 ua.uploaded_status
-          FROM tbl_assignments a
-          JOIN tbl_course c ON a.course_id = c.course_id
-          JOIN tbl_subjects s ON a.subject_id = s.subject_id 
-          LEFT JOIN tbl_uploaded_assignments ua ON a.assignment_id = ua.assignment_id AND ua.student_id = ?
-          WHERE c.course_id = ?
-          ORDER BY c.course_name, s.subject_for, s.subject_name";
+// Fetch students for dropdown
+$studentQuery = "SELECT * FROM tbl_students INNER JOIN tbl_course ON tbl_stuednts.student_course_id = tbl_course.course_id";
+$studentResult = $conn->query($studentQuery);
 
-$stmt = $conn->prepare($query);
-$stmt->bind_param("ii", $_SESSION["student_id"], $_SESSION["student_course"]);
-$stmt->execute();
-$result = $stmt->get_result();
-
-$assignments_by_course = [];
-
-while ($row = $result->fetch_assoc()) {
-    $course_name = $row['course_name'];
-    $subject_for = $row['subject_for'];
-    $assignments_by_course[$course_name][$subject_for][] = $row;
-}
-
-$stmt->close();
-$conn->close();
+// Handle selected student
+$selected_student = isset($_GET['student_id']) ? $_GET['student_id'] : '';
 ?>
 
 <div class="content-wrapper">
     <div class="container-fluid pt-4">
         <div class="card shadow-lg border-0 p-4 bg-light">
             <h2 class="text-center text-primary fw-bold mb-4">
-                Assignments to Complete
+                View Assignments by Student
             </h2>
+
+            <!-- Student Selection Form -->
+            <form method="GET">
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">Select Student:</label>
+                    <div class="col-sm-6">
+                        <select class="form-control" name="student_id" onchange="this.form.submit()">
+                            <option value="">-- Select Student --</option>
+                            <?php while ($student = $studentResult->fetch_assoc()): ?>
+                                <option value="<?php echo $student['student_id']; ?>" 
+                                    <?php echo ($selected_student == $student['student_id']) ? 'selected' : ''; ?>>
+                                    <?php echo $student['student_first_name']." ".$student['student_last_name']; ?>
+                                </option>
+                            <?php endwhile; ?>
+                        </select>
+                    </div>
+                </div>
+            </form>
+
+            <?php
+            if (!empty($selected_student)) {
+                // Fetch assignments based on selected student
+                $query = "SELECT a.*, c.course_name, s.subject_name, s.subject_for, 
+                                ua.uploaded_status
+                        FROM tbl_assignments a
+                        JOIN tbl_course c ON a.course_id = c.course_id
+                        JOIN tbl_subjects s ON a.subject_id = s.subject_id 
+                        LEFT JOIN tbl_uploaded_assignments ua 
+                            ON a.assignment_id = ua.assignment_id AND ua.student_id = ?
+                        WHERE c.course_id = (SELECT student_course FROM tbl_students WHERE student_id = ?)
+                        ORDER BY c.course_name, s.subject_for, s.subject_name";
+
+                $stmt = $conn->prepare($query);
+                $stmt->bind_param("ii", $selected_student, $selected_student);
+                $stmt->execute();
+                $result = $stmt->get_result();
+
+                $assignments_by_course = [];
+                while ($row = $result->fetch_assoc()) {
+                    $course_name = $row['course_name'];
+                    $subject_for = $row['subject_for'];
+                    $assignments_by_course[$course_name][$subject_for][] = $row;
+                }
+
+                $stmt->close();
+            }
+            ?>
 
             <?php if (!empty($assignments_by_course)): ?>
                 <?php foreach ($assignments_by_course as $course_name => $subject_fors): ?>
@@ -43,7 +72,6 @@ $conn->close();
                             <h4 class="mb-0"><i class="fas fa-graduation-cap"></i> <?php echo $course_name; ?></h4>
                         </div>
                         <div class="card-body">
-                            <?php $previous_done = true; // Allow first assignment ?>
                             <?php foreach ($subject_fors as $subject_for => $assignments): ?>
                                 <h5 class="text-secondary fw-bold pb-2"><i class="fas fa-book"></i> <?php echo $subject_for; ?></h5>
                                 <div class="table-responsive">
@@ -55,37 +83,16 @@ $conn->close();
                                                 <th>Description</th>
                                                 <th>File</th>
                                                 <th>Status</th>
-                                                <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <?php foreach ($assignments as $assignment): ?>
                                                 <?php
                                                 $status_text = "Incomplete";
-                                                $btn_class = "btn-success";
-                                                $btn_text = "Upload";
-                                                $disabled = "";
-
                                                 switch ($assignment['uploaded_status']) {
-                                                    case 1:
-                                                        $status_text = "Under Review";
-                                                        $btn_class = "btn-warning";
-                                                        $btn_text = "Pending";
-                                                        break;
-                                                    case 2:
-                                                        $status_text = "Done";
-                                                        $btn_class = "btn-secondary";
-                                                        $btn_text = "Completed";
-                                                        break;
-                                                    case 3:
-                                                        $status_text = "Rejected";
-                                                        $btn_class = "btn-danger";
-                                                        $btn_text = "Re-Upload";
-                                                        break;
-                                                }
-                                                
-                                                if (!$previous_done) {
-                                                    $disabled = "disabled";
+                                                    case 1: $status_text = "Under Review"; break;
+                                                    case 2: $status_text = "Done"; break;
+                                                    case 3: $status_text = "Rejected"; break;
                                                 }
                                                 ?>
                                                 <tr class="bg-white">
@@ -102,17 +109,8 @@ $conn->close();
                                                             <span class="text-muted">No File</span>
                                                         <?php endif; ?>
                                                     </td>
-                                                    <td><span class="badge bg-info"> <?php echo $status_text; ?> </span></td>
-                                                    <td> 
-                                                        <a href="upload_assignment.php?id=<?php echo $assignment['assignment_id']; ?>" 
-                                                           class="btn <?php echo $btn_class; ?> btn-sm <?php echo $disabled; ?>">
-                                                            <i class="fas fa-upload"></i> <?php echo $btn_text; ?>
-                                                        </a>
-                                                    </td>
+                                                    <td><span class="badge bg-info"><?php echo $status_text; ?></span></td>
                                                 </tr>
-                                                <?php
-                                                $previous_done = ($assignment['uploaded_status'] == 2); // Allow next only if previous is Done
-                                                ?>
                                             <?php endforeach; ?>
                                         </tbody>
                                     </table>
@@ -121,9 +119,10 @@ $conn->close();
                         </div>
                     </div>
                 <?php endforeach; ?>
-            <?php else: ?>
-                <p class="text-center text-muted">No assignments found.</p>
+            <?php elseif (!empty($selected_student)): ?>
+                <p class="text-center text-muted">No assignments found for this student.</p>
             <?php endif; ?>
+
         </div>
     </div>
 </div>

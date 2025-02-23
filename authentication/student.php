@@ -29,6 +29,7 @@ if (isset($_POST['roll_no']) && isset($_POST['mother_name'])) {
         $_SESSION['user_role'] = 3; // For student role
         $_SESSION['username'] = $user['student_first_name'];
         $_SESSION['student_id'] = $user['student_id'];
+        $_SESSION['student_course'] = $user['student_course'];
 
         // Redirect to a dashboard page or home page
         header("Location: $base_url");

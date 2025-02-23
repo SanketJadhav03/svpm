@@ -255,6 +255,12 @@
               </a>
             </li>
             <li class="nav-item">
+              <a href="<?php echo $base_url; ?>student/view_assignment.php" class="nav-link">
+                <i class="nav-icon fas fa-tasks"></i>
+                <p>All Assignments</p>
+              </a>
+            </li>
+            <li class="nav-item">
               <a href="<?php echo $base_url; ?>student/results.php" class="nav-link">
                 <i class="nav-icon fas fa-poll"></i>
                 <p>Result Section</p>
@@ -346,6 +352,7 @@
                   </a>
                 </li>
 
+
               </ul>
             </li>
           <?php
@@ -434,7 +441,12 @@
                     <p>Student Report</p>
                   </a>
                 </li>
-
+                <li class="nav-item">
+                  <a href="<?= $base_url ?>reports/studentassignment.php" class="nav-link">
+                    <i class="fas fa-long-arrow-alt-right nav-icon"></i>
+                    <p>Assignment Details</p>
+                  </a>
+                </li>
               </ul>
             </li>
           <?php
