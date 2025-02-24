@@ -1,10 +1,10 @@
 <?php
 include "../config/connection.php"; // Database connection
 include "../component/header.php";
-include "../component/sidebar.php"; 
+include "../component/sidebar.php";
 
-// Fetch students for dropdown
-$studentQuery = "SELECT * FROM tbl_students INNER JOIN tbl_course ON tbl_stuednts.student_course_id = tbl_course.course_id";
+$department_id = $_SESSION["department_id"];
+$studentQuery = "SELECT * FROM tbl_students INNER JOIN tbl_course ON tbl_students.student_course = tbl_course.course_id INNER JOIN tbl_department ON tbl_department.department_id = tbl_course.course_department_id WHERE tbl_department.department_id = $department_id";
 $studentResult = $conn->query($studentQuery);
 
 // Handle selected student
@@ -21,14 +21,14 @@ $selected_student = isset($_GET['student_id']) ? $_GET['student_id'] : '';
             <!-- Student Selection Form -->
             <form method="GET">
                 <div class="row mb-3">
-                    <label class="col-sm-2 col-form-label">Select Student:</label>
-                    <div class="col-sm-6">
+                    <label class="col-sm-5  h4">Select Student:</label>
+                    <div class="col-sm-7">
                         <select class="form-control" name="student_id" onchange="this.form.submit()">
                             <option value="">-- Select Student --</option>
                             <?php while ($student = $studentResult->fetch_assoc()): ?>
-                                <option value="<?php echo $student['student_id']; ?>" 
+                                <option value="<?php echo $student['student_id']; ?>"
                                     <?php echo ($selected_student == $student['student_id']) ? 'selected' : ''; ?>>
-                                    <?php echo $student['student_first_name']." ".$student['student_last_name']; ?>
+                                    <?php echo $student['student_first_name'] . " " . $student['student_last_name']." / Roll:- ".$student['student_roll']." / Department:- ".$student["department_name"]." / Course:- ".$student["course_name"];   ?>
                                 </option>
                             <?php endwhile; ?>
                         </select>
@@ -90,9 +90,15 @@ $selected_student = isset($_GET['student_id']) ? $_GET['student_id'] : '';
                                                 <?php
                                                 $status_text = "Incomplete";
                                                 switch ($assignment['uploaded_status']) {
-                                                    case 1: $status_text = "Under Review"; break;
-                                                    case 2: $status_text = "Done"; break;
-                                                    case 3: $status_text = "Rejected"; break;
+                                                    case 1:
+                                                        $status_text = "Under Review";
+                                                        break;
+                                                    case 2:
+                                                        $status_text = "Done";
+                                                        break;
+                                                    case 3:
+                                                        $status_text = "Rejected";
+                                                        break;
                                                 }
                                                 ?>
                                                 <tr class="bg-white">
@@ -101,15 +107,27 @@ $selected_student = isset($_GET['student_id']) ? $_GET['student_id'] : '';
                                                     <td><?php echo $assignment['assignment_description']; ?></td>
                                                     <td>
                                                         <?php if (!empty($assignment['assignment_file'])): ?>
-                                                            <a href="../uploads/assignments/<?php echo $assignment['assignment_file']; ?>" 
-                                                               class="btn btn-outline-primary btn-sm" target="_blank">
+                                                            <a href="../uploads/assignments/<?php echo $assignment['assignment_file']; ?>"
+                                                                class="btn btn-outline-primary btn-sm" target="_blank">
                                                                 <i class="fas fa-file-alt"></i> View
                                                             </a>
                                                         <?php else: ?>
                                                             <span class="text-muted">No File</span>
                                                         <?php endif; ?>
                                                     </td>
-                                                    <td><span class="badge bg-info"><?php echo $status_text; ?></span></td>
+                                                    <td>
+                                                        <form method="POST" action="update_status.php">
+                                                            <input type="hidden" name="assignment_id" value="<?php echo $assignment['assignment_id']; ?>">
+                                                            <input type="hidden" name="student_id" value="<?php echo $selected_student; ?>">
+                                                            <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                                                                <option value="0" <?php echo ($assignment['uploaded_status'] == 0) ? 'selected' : ''; ?>>Incomplete</option>
+                                                                <option value="1" <?php echo ($assignment['uploaded_status'] == 1) ? 'selected' : ''; ?>>Under Review</option>
+                                                                <option value="2" <?php echo ($assignment['uploaded_status'] == 2) ? 'selected' : ''; ?>>Done</option>
+                                                                <option value="3" <?php echo ($assignment['uploaded_status'] == 3) ? 'selected' : ''; ?>>Rejected</option>
+                                                            </select>
+                                                        </form>
+                                                    </td>
+
                                                 </tr>
                                             <?php endforeach; ?>
                                         </tbody>

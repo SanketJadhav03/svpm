@@ -1,7 +1,7 @@
 <?php
 include "../config/connection.php"; // Database connection
 include "../component/header.php";
-include "../component/sidebar.php"; 
+include "../component/sidebar.php";
 
 $query = "SELECT a.*, c.course_id, c.course_name, s.subject_name, s.subject_for, 
                  ua.uploaded_status
@@ -43,7 +43,8 @@ $conn->close();
                             <h4 class="mb-0"><i class="fas fa-graduation-cap"></i> <?php echo $course_name; ?></h4>
                         </div>
                         <div class="card-body">
-                            <?php $previous_done = true; // Allow first assignment ?>
+                            <?php $previous_done = true; // Allow first assignment 
+                            ?>
                             <?php foreach ($subject_fors as $subject_for => $assignments): ?>
                                 <h5 class="text-secondary fw-bold pb-2"><i class="fas fa-book"></i> <?php echo $subject_for; ?></h5>
                                 <div class="table-responsive">
@@ -70,11 +71,11 @@ $conn->close();
                                                     case 1:
                                                         $status_text = "Under Review";
                                                         $btn_class = "btn-warning";
-                                                        $btn_text = "Pending";
+                                                        $btn_text = "Under Review";
                                                         break;
                                                     case 2:
                                                         $status_text = "Done";
-                                                        $btn_class = "btn-secondary";
+                                                        $btn_class = "btn-success";
                                                         $btn_text = "Completed";
                                                         break;
                                                     case 3:
@@ -83,7 +84,7 @@ $conn->close();
                                                         $btn_text = "Re-Upload";
                                                         break;
                                                 }
-                                                
+
                                                 if (!$previous_done) {
                                                     $disabled = "disabled";
                                                 }
@@ -94,8 +95,8 @@ $conn->close();
                                                     <td><?php echo $assignment['assignment_description']; ?></td>
                                                     <td>
                                                         <?php if (!empty($assignment['assignment_file'])): ?>
-                                                            <a href="../uploads/assignments/<?php echo $assignment['assignment_file']; ?>" 
-                                                               class="btn btn-outline-primary btn-sm" target="_blank">
+                                                            <a href="../uploads/assignments/<?php echo $assignment['assignment_file']; ?>"
+                                                                class="btn btn-outline-primary btn-sm" target="_blank">
                                                                 <i class="fas fa-file-alt"></i> View
                                                             </a>
                                                         <?php else: ?>
@@ -103,11 +104,24 @@ $conn->close();
                                                         <?php endif; ?>
                                                     </td>
                                                     <td><span class="badge bg-info"> <?php echo $status_text; ?> </span></td>
-                                                    <td> 
-                                                        <a href="upload_assignment.php?id=<?php echo $assignment['assignment_id']; ?>" 
-                                                           class="btn <?php echo $btn_class; ?> btn-sm <?php echo $disabled; ?>">
-                                                            <i class="fas fa-upload"></i> <?php echo $btn_text; ?>
-                                                        </a>
+                                                    <td>
+                                                        <?php if ($assignment['uploaded_status'] != 1 && $assignment['uploaded_status'] != 2) { ?>
+                                                            <a href="upload_assignment.php?id=<?php echo $assignment['assignment_id']; ?>"
+                                                                class="btn <?php echo $btn_class; ?> btn-sm <?php echo $disabled; ?>">
+                                                                <i class="fas fa-upload"></i> <?php echo $btn_text; ?>
+                                                            </a>
+                                                        <?php } else { ?>
+                                                            <div
+                                                                class="btn <?php echo $btn_class; ?> btn-sm <?php echo $disabled; ?>">
+                                                                <?php
+                                                                $iconClass = ($assignment['uploaded_status'] == 1) ? 'fas fa-hourglass-half' : 'fas fa-check-circle';
+                                                                ?>
+                                                                <i class="<?= $iconClass; ?>"> <?php echo $btn_text; ?> </i>
+
+                                                            </div>
+                                                        <?php
+                                                        }
+                                                        ?>
                                                     </td>
                                                 </tr>
                                                 <?php
