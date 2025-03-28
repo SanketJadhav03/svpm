@@ -156,19 +156,31 @@ $attendanceRecord = $result->fetch_assoc();
     function getLocation() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
-                latitude = position.coords.latitude;
-                longitude = position.coords.longitude;
-                document.getElementById('locationInfo').innerText = "Coordinates: " + latitude + ", " + longitude;
-                getPlaceName(latitude, longitude);
+                let latitude = position.coords.latitude.toFixed(8); // Ensure precision
+                let longitude = position.coords.longitude.toFixed(8);
+
+                // Check if the coordinates match the given location
+                // if (latitude == "18.13908981" && longitude == "74.49865689") {
+                    document.getElementById('locationInfo').innerText = "Coordinates: " + latitude + ", " + longitude;
+                    getPlaceName(latitude, longitude);
+                // } else {
+                //     document.getElementById('locationInfo').innerText = "Invalid Location Received! ";
+                //     document.getElementById("startCameraButton").style.display = "none";
+                // }
             }, function(error) {
                 document.getElementById('locationError').style.display = 'block';
                 alert('Error fetching location: ' + error.message);
+            }, {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
             });
         } else {
             document.getElementById('locationError').style.display = 'block';
             alert("Geolocation is not supported by this browser.");
         }
     }
+
 
     function getPlaceName(lat, lon) {
         fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`)
