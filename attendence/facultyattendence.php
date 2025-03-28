@@ -127,7 +127,7 @@ $totalFaculty = $totalFacultyData['total_faculty'] ?? 0;
                                         while ($row = mysqli_fetch_assoc($result)) {
                                             $image = $row['attendance_photo'] ?? "default.png";
                                             $status = $row['attendance_photo'] ? "<span class='badge bg-success'>Present</span>" : "<span class='badge bg-danger'>Absent</span>";
-                                            $attendanceDate = $row['attendance_date'] ? date('d-m-Y h:i:s A', strtotime($row['attendance_date'])) : "N/A";
+                                            $attendanceDate = $row['attendance_date'] ? date('d/m/Y h:i:s A', strtotime($row['attendance_date'])) : "N/A";
                                             $latitude = $row['attendance_latitude'] ?? "N/A";
                                             $longitude = $row['attendance_longitude'] ?? "N/A";
                                             echo "<tr>
