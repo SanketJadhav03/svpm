@@ -81,7 +81,7 @@ $totalStudents = $totalStudentData['total_students'] ?? 0;
                                 </div>
                                 <div class="form-group col-3">
                                     <label for="start_date">Start Date:</label>
-                                    <input type="date" name="start_date" id="start_date" class="form-control" 
+                                    <input type="date" name="start_date" id="start_date" class="form-control"
                                         value="<?php echo htmlspecialchars($startDate); ?>">
                                 </div>
                                 <div class="form-group col-3">
@@ -97,8 +97,9 @@ $totalStudents = $totalStudentData['total_students'] ?? 0;
                         </form>
 
                         <?php
+
                         $query = "SELECT s.student_id, s.student_first_name, c.course_name, c.course_id, 
-                                  a.attendance_photo, a.attendance_date 
+                                  a.*
                                   FROM tbl_students AS s
                                   LEFT JOIN tbl_attendance AS a 
                                   ON s.student_id = a.attendance_student_id 
@@ -124,6 +125,8 @@ $totalStudents = $totalStudentData['total_students'] ?? 0;
                                         <th>Name</th>
                                         <th>Course</th>
                                         <th>Date & Time</th>
+                                        <th>Latitude</th>
+                                        <th>Longitude</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>
@@ -134,22 +137,28 @@ $totalStudents = $totalStudentData['total_students'] ?? 0;
                                         while ($row = mysqli_fetch_assoc($result)) {
                                             $image = $row['attendance_photo'] ?? "default.png";
                                             $status = $row['attendance_photo'] ? "<span class='badge bg-success'>Present</span>" : "<span class='badge bg-danger'>Absent</span>";
-                                            $attendanceDate = $row['attendance_date'] ? date('d-m-Y h:i:s A', strtotime($row['attendance_date'])) : "N/A";
+                                            $attendanceDate = $row['attendance_date'] ? date('d/m/Y h:i:s A', strtotime($row['attendance_date'])) : "N/A";
+                                            $latitude = $row['attendance_latitude'] ?? "N/A";
+                                            $longitude = $row['attendance_longitude'] ?? "N/A";
+
                                             echo "<tr>
-                                                    <td>{$count}</td>
-                                                    <td><img src='{$base_url}assets/images/studentattendence/{$image}' width='100'></td> 
-                                                    <td>{$row['student_first_name']}</td> 
-                                                    <td>{$row['course_name']}</td>  
-                                                    <td>{$attendanceDate}</td>
-                                                    <td>{$status}</td>  
-                                                </tr>";
+                    <td>{$count}</td>
+                    <td><img src='{$base_url}assets/images/studentattendence/{$image}' width='100'></td> 
+                    <td>{$row['student_first_name']}</td> 
+                    <td>{$row['course_name']}</td>  
+                    <td>{$attendanceDate}</td>
+                    <td>{$latitude}</td>
+                    <td>{$longitude}</td>
+                    <td>{$status}</td>  
+                </tr>";
                                             $count++;
                                         }
                                     } else {
-                                        echo "<tr><td colspan='6'><div class='text-danger font-weight-bold'>No Attendance Found.</div></td></tr>";
+                                        echo "<tr><td colspan='8'><div class='text-danger font-weight-bold'>No Attendance Found.</div></td></tr>";
                                     }
                                     ?>
                                 </tbody>
+
                             </table>
                         </div>
                     </div>
