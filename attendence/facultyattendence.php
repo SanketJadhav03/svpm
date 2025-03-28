@@ -5,10 +5,10 @@ include "../component/sidebar.php";
 
 // Get filters
 
-$departmentId = isset($_SESSION["department_id"]) 
-    ? $_SESSION["department_id"] 
-    : (isset($_GET['department_id']) 
-        ? mysqli_real_escape_string($conn, $_GET['department_id']) 
+$departmentId = isset($_SESSION["department_id"])
+    ? $_SESSION["department_id"]
+    : (isset($_GET['department_id'])
+        ? mysqli_real_escape_string($conn, $_GET['department_id'])
         : '');
 $startDate = isset($_GET['start_date']) ? mysqli_real_escape_string($conn, $_GET['start_date']) : date('Y-m-d');
 $endDate = isset($_GET['end_date']) ? mysqli_real_escape_string($conn, $_GET['end_date']) : date('Y-m-d');
@@ -58,7 +58,7 @@ $totalFaculty = $totalFacultyData['total_faculty'] ?? 0;
                             <div class="row">
                                 <div class="form-group col-4">
                                     <label for="department">Select Department:</label>
-                                    <select <?= isset($_SESSION["department_id"]) ?" disabled":"" ?> name="department_id" id="department" class="form-control">
+                                    <select <?= isset($_SESSION["department_id"]) ? " disabled" : "" ?> name="department_id" id="department" class="form-control">
                                         <option value="">All Departments</option>
                                         <?php
                                         $deptQuery = "SELECT * FROM tbl_department ORDER BY department_name";
@@ -90,7 +90,7 @@ $totalFaculty = $totalFacultyData['total_faculty'] ?? 0;
                         <?php
                         // Query to fetch faculty attendance
                         $query = "SELECT f.faculty_id, f.faculty_name, d.department_name, 
-                                  a.attendance_photo, a.attendance_date 
+                                  a.* 
                                   FROM tbl_faculty AS f
                                   LEFT JOIN tbl_faculty_attendance AS a 
                                   ON f.faculty_id = a.attendance_faculty_id 
@@ -114,6 +114,9 @@ $totalFaculty = $totalFacultyData['total_faculty'] ?? 0;
                                         <th>Name</th>
                                         <th>Department</th>
                                         <th>Date & Time</th>
+
+                                        <th>Latitude</th>
+                                        <th>Longitude</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>
@@ -125,11 +128,15 @@ $totalFaculty = $totalFacultyData['total_faculty'] ?? 0;
                                             $image = $row['attendance_photo'] ?? "default.png";
                                             $status = $row['attendance_photo'] ? "<span class='badge bg-success'>Present</span>" : "<span class='badge bg-danger'>Absent</span>";
                                             $attendanceDate = $row['attendance_date'] ? date('d-m-Y h:i:s A', strtotime($row['attendance_date'])) : "N/A";
+                                            $latitude = $row['attendance_latitude'] ?? "N/A";
+                                            $longitude = $row['attendance_longitude'] ?? "N/A";
                                             echo "<tr>
                                                     <td>{$count}</td>
                                                     <td>{$row['faculty_name']}</td> 
                                                     <td>{$row['department_name']}</td>  
                                                     <td>{$attendanceDate}</td>
+                                                      <td>{$latitude}</td>
+                    <td>{$longitude}</td>
                                                     <td>{$status}</td>  
                                                 </tr>";
                                             $count++;
