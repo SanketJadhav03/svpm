@@ -93,10 +93,7 @@ include "../component/sidebar.php";
                             <td><?= $data["department_hod_contact"] ?></td>
                             <td><?= $data["department_email"] ?></td>
                             <td><?= $data["department_phone"] ?></td> 
-                            <td>
-                            <a href="timetable.php?department_id=<?= $data["department_id"] ?>" onclick="if(confirm('Are you sure want to delete this course?')){return true}else{return false;}" class="btn btn-sm shadow btn-secondary">
-                                    <i class="fas fa-calendar-alt"></i>
-                                </a>
+                            <td> 
                                 <a href="edit.php?department_id=<?= $data["department_id"] ?>" class="btn btn-sm shadow btn-info">
                                     <i class="fa fa-pen"></i>
                                 </a>
