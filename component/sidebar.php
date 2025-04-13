@@ -243,6 +243,13 @@
               </a>
             </li>
             <li class="nav-item">
+              <a href="<?php echo $base_url; ?>leave/student.php" class="nav-link">
+              <i class="nav-icon fas fa-user-graduate"></i>
+
+                <p>My Leaves </p>
+              </a>
+            </li>
+            <li class="nav-item">
               <a href="<?php echo $base_url; ?>student/coursedetails.php" class="nav-link">
                 <i class="nav-icon fas fa-book"></i>
                 <p>Course Details</p>
@@ -277,6 +284,19 @@
               <a href="<?php echo $base_url; ?>dashboard/department.php" class="nav-link">
                 <i class="nav-icon fas fa-chart-pie"></i>
                 <p>Dashboard</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="<?php echo $base_url; ?>leave/faculty.php" class="nav-link">
+              <i class="nav-icon fas fa-user-clock"></i>
+              <p>Faculty Leaves </p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="<?php echo $base_url; ?>leave/student.php" class="nav-link">
+              <i class="nav-icon fas fa-user-graduate"></i>
+
+                <p>Student Leaves </p>
               </a>
             </li>
             <li class="nav-item">
@@ -366,6 +386,19 @@
               <a href="<?php echo $base_url; ?>dashboard/faculty.php" class="nav-link">
                 <i class="nav-icon fas fa-chart-pie"></i>
                 <p>Dashboard</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="<?php echo $base_url; ?>leave/faculty.php" class="nav-link">
+              <i class="nav-icon fas fa-user-clock"></i>
+              <p>My Leaves </p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="<?php echo $base_url; ?>leave/student.php" class="nav-link">
+              <i class="nav-icon fas fa-user-graduate"></i>
+
+                <p>Student Leaves </p>
               </a>
             </li>
             <li class="nav-item">

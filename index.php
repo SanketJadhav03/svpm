@@ -170,7 +170,174 @@ if ($result) {
         <!-- /.col -->
       </div>
       <!-- /.row -->
-
+      <div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title font-weight-bold">
+          <i class="fas fa-user-times mr-2"></i>Today's Absent Students
+        </h3>
+        <div class="card-tools">
+          <span class="badge badge-danger">
+            <?php 
+              $today = date('Y-m-d');
+              $absentQuery = "SELECT COUNT(*) AS absent_count FROM tbl_student_leave 
+                            WHERE student_leave_start_date <= '$today' 
+                            AND student_leave_end_date >= '$today'
+                            AND student_leave_status = 'Approved'";
+              $absentResult = mysqli_fetch_array(mysqli_query($conn, $absentQuery));
+              echo $absentResult['absent_count'] . " Absent";
+            ?>
+          </span>
+        </div>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Student Name</th>
+                <th>Course</th>
+                <th>Reason</th>
+                <th>Leave Period</th>
+                <th>Days</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php
+              $absentListQuery = "SELECT sl.*, s.student_first_name, s.student_last_name, c.course_name 
+                                FROM tbl_student_leave sl
+                                LEFT JOIN tbl_students s ON s.student_id = sl.student_id
+                                LEFT JOIN tbl_course c ON c.course_id = sl.course_id
+                                WHERE sl.student_leave_start_date <= '$today' 
+                                AND sl.student_leave_end_date >= '$today'
+                                AND sl.student_leave_status = 'Approved'
+                                ORDER BY sl.student_leave_start_date DESC";
+              $absentListResult = mysqli_query($conn, $absentListQuery);
+              $absentCount = 0;
+              
+              while($absent = mysqli_fetch_array($absentListResult)) {
+                $absentCount++;
+              ?>
+              <tr>
+                <td><?= $absentCount ?></td>
+                <td><?= htmlspecialchars($absent['student_first_name'] . ' ' . $absent['student_last_name']) ?></td>
+                <td><?= htmlspecialchars($absent['course_name']) ?></td>
+                <td><?= htmlspecialchars($absent['student_leave_reason']) ?></td>
+                <td>
+                  <?= date('d M Y', strtotime($absent['student_leave_start_date'])) ?> - 
+                  <?= date('d M Y', strtotime($absent['student_leave_end_date'])) ?>
+                </td>
+                <td><?= $absent['student_leave_holiday_count'] ?></td>
+              </tr>
+              <?php } ?>
+              
+              <?php if($absentCount == 0) { ?>
+              <tr>
+                <td colspan="6" class="text-center text-muted font-weight-bold py-4">
+                  No absent students today
+                </td>
+              </tr>
+              <?php } ?>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <?php if($absentCount > 5) { ?>
+      <div class="card-footer clearfix">
+        <a href="<?= $base_url ?>student/absent-list.php" class="btn btn-sm btn-secondary float-right">
+          View All Absent Students
+        </a>
+      </div>
+      <?php } ?>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title font-weight-bold">
+          <i class="fas fa-chalkboard-teacher mr-2"></i>Today's Absent Faculty
+        </h3>
+        <div class="card-tools">
+          <span class="badge badge-danger">
+            <?php 
+              $today = date('Y-m-d');
+              $facultyAbsentQuery = "SELECT COUNT(*) AS absent_count FROM tbl_faculty_leave 
+                                   WHERE faculty_leave_start_date <= '$today' 
+                                   AND faculty_leave_end_date >= '$today'
+                                   AND faculty_leave_status = 'Approved'";
+              $facultyAbsentResult = mysqli_fetch_array(mysqli_query($conn, $facultyAbsentQuery));
+              echo $facultyAbsentResult['absent_count'] . " Absent";
+            ?>
+          </span>
+        </div>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Faculty Name</th>
+                <th>Department</th>
+                <th>Reason</th>
+                <th>Leave Period</th>
+                <th>Days</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php
+              $facultyAbsentListQuery = "SELECT fl.*, f.faculty_name, d.department_name 
+                                       FROM tbl_faculty_leave fl
+                                       LEFT JOIN tbl_faculty f ON f.faculty_id = fl.faculty_id
+                                       LEFT JOIN tbl_department d ON d.department_id = fl.department_id
+                                       WHERE fl.faculty_leave_start_date <= '$today' 
+                                       AND fl.faculty_leave_end_date >= '$today'
+                                       AND fl.faculty_leave_status = 'Approved'
+                                       ORDER BY fl.faculty_leave_start_date DESC";
+              $facultyAbsentListResult = mysqli_query($conn, $facultyAbsentListQuery);
+              $facultyAbsentCount = 0;
+              
+              while($facultyAbsent = mysqli_fetch_array($facultyAbsentListResult)) {
+                $facultyAbsentCount++;
+              ?>
+              <tr>
+                <td><?= $facultyAbsentCount ?></td>
+                <td><?= htmlspecialchars($facultyAbsent['faculty_name']) ?></td>
+                <td><?= htmlspecialchars($facultyAbsent['department_name']) ?></td>
+                <td><?= htmlspecialchars($facultyAbsent['faculty_leave_reason']) ?></td>
+                <td>
+                  <?= date('d M Y', strtotime($facultyAbsent['faculty_leave_start_date'])) ?> - 
+                  <?= date('d M Y', strtotime($facultyAbsent['faculty_leave_end_date'])) ?>
+                </td>
+                <td><?= $facultyAbsent['faculty_leave_holiday_count'] ?></td>
+              </tr>
+              <?php } ?>
+              
+              <?php if($facultyAbsentCount == 0) { ?>
+              <tr>
+                <td colspan="6" class="text-center text-muted font-weight-bold py-4">
+                  No absent faculty members today
+                </td>
+              </tr>
+              <?php } ?>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <?php if($facultyAbsentCount > 5) { ?>
+      <div class="card-footer clearfix">
+        <a href="<?= $base_url ?>faculty/absent-list.php" class="btn btn-sm btn-secondary float-right">
+          View All Absent Faculty
+        </a>
+      </div>
+      <?php } ?>
+    </div>
+  </div>
+</div>
 
 
       <!-- Main row -->

@@ -13,7 +13,7 @@ if (isset($_POST['roll_no']) && isset($_POST['mother_name'])) {
     $mother_name = $_POST['mother_name'];
 
     // Prepare SQL query to prevent SQL injection
-    $stmt = $conn->prepare("SELECT * FROM tbl_students WHERE student_roll = ? AND student_mother_name = ?");
+    $stmt = $conn->prepare("SELECT * FROM tbl_students  INNER JOIN `tbl_course` ON tbl_course.course_id = tbl_students.student_course WHERE student_roll = ? AND student_mother_name = ?");
     $stmt->bind_param("ss", $roll_no, $mother_name);
 
     // Execute the statement
@@ -30,6 +30,7 @@ if (isset($_POST['roll_no']) && isset($_POST['mother_name'])) {
         $_SESSION['username'] = $user['student_first_name'];
         $_SESSION['student_id'] = $user['student_id'];
         $_SESSION['student_course'] = $user['student_course'];
+        $_SESSION['department_id'] = $user['course_department_id'];
 
         // Redirect to a dashboard page or home page
         header("Location: $base_url");

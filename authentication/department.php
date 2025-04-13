@@ -45,7 +45,7 @@ if (isset($_POST['department_email']) && isset($_POST['department_password'])) {
     } else {
         // No department found with the entered email
         $error_message = "Department not found!";
-        header("Location: department_login.php?error=" . urlencode($error_message));
+        header("Location: department.php?error=" . urlencode($error_message));
         exit();
     }
 
