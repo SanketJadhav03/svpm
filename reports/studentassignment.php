@@ -40,7 +40,7 @@ $selected_student = isset($_GET['student_id']) ? $_GET['student_id'] : '';
             if (!empty($selected_student)) {
                 // Fetch assignments based on selected student
                 $query = "SELECT a.*, c.course_name, s.subject_name, s.subject_for, 
-                                ua.uploaded_status
+                                ua.*
                         FROM tbl_assignments a
                         JOIN tbl_course c ON a.course_id = c.course_id
                         JOIN tbl_subjects s ON a.subject_id = s.subject_id 
@@ -106,8 +106,8 @@ $selected_student = isset($_GET['student_id']) ? $_GET['student_id'] : '';
                                                     <td><?php echo $assignment['assignment_title']; ?></td>
                                                     <td><?php echo $assignment['assignment_description']; ?></td>
                                                     <td>
-                                                        <?php if (!empty($assignment['assignment_file'])): ?>
-                                                            <a href="../uploads/assignments/<?php echo $assignment['assignment_file']; ?>"
+                                                        <?php if (!empty($assignment['uploaded_file'])): ?>
+                                                            <a href="../uploads/student_assignments/<?php echo $assignment['uploaded_file']; ?>"
                                                                 class="btn btn-outline-primary btn-sm" target="_blank">
                                                                 <i class="fas fa-file-alt"></i> View
                                                             </a>
