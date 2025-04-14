@@ -22,10 +22,15 @@ if (!$data) {
 
 $courseName = $data["course_name"];
 $courseSemesters = (int) $data["course_duration"]; // Total Semesters from DB
-$currentSemester = ceil((time() - strtotime($data['created_at'])) / (6 * 30 * 24 * 60 * 60)); // Approx Current Semester
-$currentSemester = min($currentSemester, $courseSemesters); // Limit to max duration
-$remainingSemesters = max(0, $courseSemesters - $currentSemester); // Remaining
+$completedSemesters = 0; // We'll get this from results table
 
+// Get completed semesters count from results
+$semesterQuery = "SELECT COUNT(DISTINCT semester) as completed FROM tbl_results WHERE student_id = '$data_id'";
+$semesterResult = mysqli_query($conn, $semesterQuery);
+if ($semesterRow = mysqli_fetch_assoc($semesterResult)) {
+    $completedSemesters = $semesterRow['completed'];
+}
+$remainingSemesters = max(0, $courseSemesters - $completedSemesters); // Remaining
 ?>
 
 <div class="content-wrapper p-3">
@@ -43,11 +48,11 @@ $remainingSemesters = max(0, $courseSemesters - $currentSemester); // Remaining
                         style="width: 200px; height: 170px;">
                 </div>
                 <div class="py-3">
-                    <h4 class="text-center">Course Duration Overview</h4>
-                    <div class="py-2 pb-2">Total Duration: <?= $courseSemesters . " Semester's" ?></div>
+                    <h4 class="text-center">Course Progress</h4>
+                    <div class="py-2 pb-2">Total Duration: <?= $courseSemesters . " Semester(s)" ?></div>
                     <canvas id="coursePieChart"></canvas>
                     <div class="d-flex justify-content-between py-3">
-                        <div>Completed: <b><?= $currentSemester ?> Semester(s)</b></div>
+                        <div>Completed: <b><?= $completedSemesters ?> Semester(s)</b></div>
                         <div>Remaining: <b><?= $remainingSemesters ?> Semester(s)</b></div>
                     </div>
                 </div>
@@ -118,7 +123,6 @@ $remainingSemesters = max(0, $courseSemesters - $currentSemester); // Remaining
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
     <div class="card">
@@ -149,8 +153,7 @@ $remainingSemesters = max(0, $courseSemesters - $currentSemester); // Remaining
                 </tbody>
             </table>
             <div>
-            <a href="upload_result.php?student_id=<?= $data_id ?>" class="w-100 mb-2 btn btn-primary mt-2">Upload New Result</a>
-
+                <a href="upload_result.php?student_id=<?= $data_id ?>" class="w-100 mb-2 btn btn-primary mt-2">Upload New Result</a>
             </div>
         </div>
     </div>
@@ -164,7 +167,7 @@ $remainingSemesters = max(0, $courseSemesters - $currentSemester); // Remaining
         data: {
             labels: ['Completed Semesters', 'Remaining Semesters'],
             datasets: [{
-                data: [<?= $currentSemester ?>, <?= $remainingSemesters ?>],
+                data: [<?= $completedSemesters ?>, <?= $remainingSemesters ?>],
                 backgroundColor: ['#28a745', '#dc3545'],
                 hoverOffset: 4
             }]
